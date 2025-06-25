@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PersonalInfo from '../component/PersonalInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -13,7 +14,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("personalInfo");
 
   return (
-    <section className='container bg-red-50 min-w-full h-full py-5 px-2 md:px-10 lg:px-30'>
+    <section className='container min-w-full py-5 px-2 md:px-10 lg:px-30'>
       <div className="logo-text flex flex-col justify-center items-center min-w-full gap-y-0">
         <div className="text-center space-y-2 relative">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent leading-tight">
@@ -62,7 +63,7 @@ export default function Profile() {
 
           <div className="w-full p-10 bg-white">
             {/* Render tab content based on activeTab */}
-            {activeTab === "personal" && <div>Personal Info Content</div>}
+            {activeTab === "personalInfo" && <PersonalInfo/>}
             {activeTab === "healthInfo" && <div>Health Info Content</div>}
             {activeTab === "changePassword" && <div>Change Password Content</div>}
           </div>

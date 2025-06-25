@@ -11,6 +11,9 @@ import Register from './pages/Register';
 import SecondStage from './pages/SecondStage';
 import HeaderLayout from './component/HeaderLayout';
 import { AuthProvider } from './component/AuthContext';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import PrivateRoute from './component/PrivateRoute';
 
 
 function App() {
@@ -29,7 +32,10 @@ function App() {
 
 
           {/* Private Routes with Sidebar */}
-          <Route path="/home" element={<SidebarLayout />}>
+          <Route path="/home" element={<PrivateRoute>
+            <SidebarLayout />
+            </PrivateRoute>
+            }>
 
             <Route index path="" element={<Home />} />
             <Route path="request" element={<Request />} />
@@ -40,6 +46,7 @@ function App() {
 
           </Route>
         </Routes>
+        <ToastContainer position="top-right" autoClose={3000} />
       </BrowserRouter>
     </AuthProvider>
   );

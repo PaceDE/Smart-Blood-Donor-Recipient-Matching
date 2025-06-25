@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/bloodlink-logo.svg';
+import { toast } from 'react-toastify';
 
 const WILLINGNESS_CHOICES = [
   { value: 1, text: "1 - Not willing at all" },
@@ -40,6 +41,13 @@ export default function SecondStage() {
 
   const validateForm = () => {
     const newErrors = {};
+    if (healthInfo.total_donations!== '' && parseInt(healthInfo.total_donations) !== 0) {
+      if(healthInfo.first_donation_date=== '')
+        newErrors.first_donation_date = "This field is required";
+      if(healthInfo.last_donation_date==='')
+        newErrors.last_donation_date = "This field is required";
+    }
+
     if (healthInfo.total_donations === '') newErrors.total_donations = "This field is required";
     if (healthInfo.weight_kg === '') newErrors.weight_kg = "Weight is required";
     if (!healthInfo.willingness_level) newErrors.willingness_level = "Willingness level is required";
@@ -49,15 +57,21 @@ export default function SecondStage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async () => {  
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
     setSubmitError('');
     setIsSubmitting(true);
+    const healthData = { ...healthInfo };
 
-   
-    const userData = { userInfo, healthInfo };
-    
+    // If no donations, assign default placeholder dates
+    if (parseInt(healthData.total_donations) === 0) {
+      healthData.first_donation_date = '';
+      healthData.last_donation_date = '';
+    }
+
+    const userData = { userInfo, healthInfo: healthData };
+
     try {
       const response = await fetch('http://localhost:5000/api/register', {
         method: 'POST',
@@ -66,12 +80,16 @@ export default function SecondStage() {
       });
 
       if (response.ok) {
+        toast.success("Registration Succesfull");
+
         navigate('/login');
       } else {
         const errorData = await response.json();
         setSubmitError(errorData.message || 'Registration failed');
       }
     } catch (error) {
+      toast.error("Failed to register. Please try again.");
+
       setSubmitError(error.message || 'Network error');
     } finally {
       setIsSubmitting(false);
@@ -114,7 +132,7 @@ export default function SecondStage() {
               </div>
 
               <div>
-                <label htmlFor="first_donation_date" className="block mb-1 font-medium">First Donation Date</label>
+                <label htmlFor="first_donation_date" className={"block mb-1 font-medium"}>First Donation Date</label>
                 <input
                   id="first_donation_date"
                   type="date"
@@ -122,6 +140,7 @@ export default function SecondStage() {
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded p-2"
                 />
+                {errors.first_donation_date && <p className="text-red-500 text-sm">{errors.first_donation_date}</p>}
               </div>
 
               <div>
@@ -133,6 +152,7 @@ export default function SecondStage() {
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded p-2"
                 />
+                {errors.last_donation_date && <p className="text-red-500 text-sm">{errors.last_donation_date}</p>}
               </div>
 
               <div>
@@ -146,7 +166,7 @@ export default function SecondStage() {
                 />
               </div>
 
-              {userInfo.gender=="Female" && <div>
+              {userInfo.gender == "Female" && <div>
                 <label htmlFor="recently_gave_birth" className="block mb-1 font-medium">Recently Gave Birth (Last 9 months)</label>
                 <input
                   id="recently_gave_birth"

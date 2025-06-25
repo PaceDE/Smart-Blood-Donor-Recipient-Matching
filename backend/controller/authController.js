@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const generateAccessToken = (user) => {
-    return jwt.sign({ _id: user._id, role: user.role, fullName: user.fullName }, process.env.ACCESS_TOKEN_SECRET, {
+    return jwt.sign({ _id: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
     });
 };
 const generateRefreshToken = (user) => {
-    return jwt.sign({ _id: user._id, role: user.role, fullName: user.fullName }, process.env.REFRESH_TOKEN_SECRET, {
+    return jwt.sign({ _id: user._id, role: user.role }, process.env.REFRESH_TOKEN_SECRET, {
         expiresIn: "7d",
     });
 };
@@ -95,4 +95,29 @@ const logout = (req, res) => {
     res.clearCookie("accessToken").clearCookie("refreshToken").json({ success: true, msg: "Logged out" });
 };
 
-export { register, login, logout, generateAccessToken };
+const updatePersonalInfo = async (req,res) =>{
+    try {
+        
+        const userId = req.user._id; // from verifyToken middleware
+        const updates = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updates,
+            { new: true, runValidators: true }
+        );
+      
+
+        if (!updatedUser) {console.log("haha3");
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({user:updatedUser});
+    } catch (err) {
+        
+        console.error('Error updating user:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+export { register, login, logout, generateAccessToken,generateRefreshToken,updatePersonalInfo };

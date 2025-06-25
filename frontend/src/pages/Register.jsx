@@ -254,7 +254,7 @@ export default function Register() {
                                             type="tel"
                                             placeholder="Enter your phone number"
                                             className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
-                                            value={formData.phoneNumber}
+                                            value={formData.phone}
                                             onChange={handleChange}
 
                                         />
