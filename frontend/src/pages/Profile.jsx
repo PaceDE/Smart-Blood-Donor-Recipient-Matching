@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PersonalInfo from '../component/PersonalInfo';
+import TopBar from '../component/TopBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -14,10 +15,14 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("personalInfo");
 
   return (
-    <section className='container min-w-full py-5 px-2 md:px-10 lg:px-30'>
-      <div className="logo-text flex flex-col justify-center items-center min-w-full gap-y-0">
+    <div>
+      <TopBar heading={"My Profile"} text={` Manage your personal information and account settings`} />
+
+
+    <main className='container min-w-full py-5 px-2 md:px-10 lg:px-30'>
+      {/*<div className="logo-text flex flex-col justify-center items-center min-w-full gap-y-0">
         <div className="text-center space-y-2 relative">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent">
             My Profile
           </h1>
         </div>
@@ -27,6 +32,7 @@ export default function Profile() {
           </p>
         </div>
       </div>
+      */}
 
       <div>
         <div className='rounded-lg mt-6 border border-gray-200 shadow-md'>
@@ -70,6 +76,7 @@ export default function Profile() {
 
         </div>
       </div>
-    </section>
+    </main>
+    </div>
   );
 }

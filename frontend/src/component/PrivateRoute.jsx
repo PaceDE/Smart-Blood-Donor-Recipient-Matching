@@ -10,8 +10,6 @@ const PrivateRoute = ({ children }) => {
     return <div>Loading..</div>;
 
   }
-
-
  
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;

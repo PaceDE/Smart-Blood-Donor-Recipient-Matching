@@ -13,6 +13,7 @@ import {
   faXmark,
   faRightFromBracket
 } from '@fortawesome/free-solid-svg-icons';
+import { Droplets } from 'lucide-react';
 
 const menuItems = [
   { path: '/home/request', label: 'Request', icon: faHandHoldingDroplet },
@@ -38,7 +39,7 @@ const Sidebar=()=> {
       <input type="checkbox" id="sidebar-toggle" className="peer hidden" />
 
       {/* Hamburger for small devices */}
-      <label htmlFor="sidebar-toggle" className="sm:hidden fixed top-4 left-4 z-30 bg-white border border-gray-200 p-2 rounded shadow-md cursor-pointer">
+      <label htmlFor="sidebar-toggle" className="sm:hidden fixed top-6 left-4 z-30 bg-white border border-gray-200 p-2 rounded shadow-md cursor-pointer">
         <FontAwesomeIcon icon={faBars} className="text-xl text-red-600" />
       </label>
 

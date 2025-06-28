@@ -1,5 +1,7 @@
-import User from "../models/user.js";
+import User from "../models/users.js";
 import HealthInfo from "../models/healthinfo.js";
+import RequestInfo from "../models/requestinfo.js";
+import DonationHistory from "../models/donationhistory.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -69,6 +71,9 @@ const login = async (req, res) => {
         const refreshToken = generateRefreshToken(user);
         const { password:_, ...userData } = user._doc;
         const healthInfo = await HealthInfo.findOne({ user: user._id });
+        const totalDonations = await DonationHistory.countDocuments({ donor: user._id });
+        const totalRequests = await RequestInfo.countDocuments({ requester: user._id });
+
         res
             .cookie("accessToken", accessToken, {
                 httpOnly: true,
@@ -82,7 +87,7 @@ const login = async (req, res) => {
                 sameSite: "Strict",
                 maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
             })
-            .json({ success: true, msg: "Login successful", user: userData, healthInfo: healthInfo });
+            .json({ success: true, msg: "Login successful", user: userData, healthInfo: healthInfo,totalDonations:totalDonations,totalRequests:totalRequests });
     }
     catch (err) {
         console.error("Login Error:", err);

@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 
-const Header=() =>{
+const Header=({}) =>{
  
 
   return (
