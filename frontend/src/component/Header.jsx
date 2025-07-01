@@ -2,21 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-<<<<<<< HEAD
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-=======
-  faHandHoldingDroplet,
-  faTruckDroplet,
-  faHome,
-  faUser,
-  faCircleQuestion
-} from '@fortawesome/free-solid-svg-icons';
-
-
-const Header=({}) =>{
- 
->>>>>>> 6979a847025781b94af7134d58720664f63aaa3a
 
 const Header = () => {
   return (
