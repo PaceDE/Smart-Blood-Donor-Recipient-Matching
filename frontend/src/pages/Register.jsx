@@ -12,6 +12,7 @@ import {
 import { faUser as faName, faCalendar, faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import LocationPicker from '../component/LocationPicker';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../component/Footer';
 
 
 
@@ -89,14 +90,8 @@ export default function Register() {
 
 
     return (
-        <section className='container bg-red-50 min-w-full h-full p-5 '>
+        <section className='container bg-gray-50 min-w-full h-full p-5 '>
             <div className="logo-text flex flex-col justify-center items-center min-w-full gap-y-0">
-                <div className="text-center space-y-2">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent leading-tight">
-                        Smart Blood Donor
-                    </h1>
-                    <h2 className="text-2xl md:text-3xl font-semibold text-gray-700">Recipient Matching System</h2>
-                </div>
 
                 <div className="relative w-[25%]">
                     <img src={logo} className="w-full h-full object-contain" alt="Logo" />
@@ -341,6 +336,7 @@ export default function Register() {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </section>
     )
 }

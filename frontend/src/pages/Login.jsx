@@ -12,6 +12,7 @@ import {
 import {  faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import { useAuth } from "../component/AuthContext";
 import { toast } from 'react-toastify';
+import Footer from '../component/Footer';
 
 function Login() {
   const navigate = useNavigate();
@@ -76,15 +77,8 @@ function Login() {
   }
 
   return (
-    <section className='container bg-red-50 min-w-full h-full p-5 '>
-      <div className="logo-text flex flex-col justify-center items-center min-w-full gap-y-0">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-red-700 bg-clip-text text-transparent leading-tight">
-            Smart Blood Donor
-          </h1>
-          <h2 className="text-2xl md:text-3xl font-semibold text-gray-700">Recipient Matching System</h2>
-        </div>
-
+    <section className='container bg-gray-50 min-w-full h-full p-5 '>
+      <div className="flex flex-col justify-center items-center min-w-full gap-y-0">
         <div className="relative w-[25%]">
           <img src={logo} className="w-full h-full" alt="Logo" />
         </div>
@@ -96,7 +90,7 @@ function Login() {
 
       </div>
 
-      <div className='px-10'>
+      <div className='w-[50%] px-10 mx-auto'>
         <div className='rounded-lg mt-6 border border-gray-200 shadow-md'>
           <div className=" text-white w-full p-5 px-7 rounded-t-lg bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center gap-x-5">
@@ -181,6 +175,7 @@ function Login() {
           </div>
         </div>
       </div>
+      <Footer/>
     </section>
   );
 }

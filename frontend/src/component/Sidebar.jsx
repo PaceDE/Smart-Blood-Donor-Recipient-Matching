@@ -85,16 +85,6 @@ const Sidebar=()=> {
                 </li>
               );
             })}
-
-            <li className="w-full flex justify-center">
-                <button
-                  onClick={handleLogout}
-                  className="flex flex-col items-center p-3 w-20 text-red-500 hover:bg-red-50 rounded-xl hover:shadow-sm transition-all duration-300"
-                >
-                  <FontAwesomeIcon icon={faRightFromBracket} className="text-xl mb-2" />
-                  <span className="text-xs font-medium">Logout</span>
-                </button>
-              </li>
           </ul>
         </nav>
         
