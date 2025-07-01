@@ -10,6 +10,8 @@ const RequestInfoSchema = new mongoose.Schema({
   address: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },
+  hospital: {type:String},
+  unitsNeeded: Number,
   description: { type: String },
   status: { 
     type: String, 
