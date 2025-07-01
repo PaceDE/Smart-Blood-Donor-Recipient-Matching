@@ -5,6 +5,9 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [healthInfo, setHealthInfo] =useState(null);
+  const [totalDonations,setTotalDonations] =useState(0);
+  const [totalRequests,setTotalRequests] =useState(0);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -20,22 +23,30 @@ export const AuthProvider = ({ children }) => {
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
-            setHealthInfo(data.healthInfo)
+            setHealthInfo(data.healthInfo);
+            setTotalDonations(data.totalDonations);
+            setTotalRequests(data.totalRequests);
             setIsLoggedIn(true);
           } else {
             setUser(null);
             setHealthInfo(null)
+            setTotalDonations(0);
+            setTotalRequests(0);
             setIsLoggedIn(false);
           }
         } else {
           setUser(null);
           setHealthInfo(null)
+          setTotalDonations(0);
+          setTotalRequests(0);
           setIsLoggedIn(false);
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
         setUser(null);
         setHealthInfo(null)
+        setTotalDonations(0);
+        setTotalRequests(0);
         setIsLoggedIn(false);
       } finally {
         setIsLoading(false);
@@ -45,9 +56,13 @@ export const AuthProvider = ({ children }) => {
     checkAuthentication();
   }, []);
 
-  const login = (userData,healthInfo) => {
+  const login = (userData,healthInfo,totalDonations,totalRequests) => {
     setUser(userData);
     setHealthInfo(healthInfo);
+    setTotalDonations(totalDonations);
+    setTotalRequests(totalRequests);
+    setTotalDonations(0);
+    setTotalRequests(0);
     setIsLoggedIn(true);
   };
 
@@ -74,6 +89,12 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     healthInfo,
+    totalRequests,
+    totalDonations,
+    setUser,
+    setHealthInfo,
+    setTotalRequests,
+    setTotalDonations,
     isLoggedIn,
     isLoading, 
     login,

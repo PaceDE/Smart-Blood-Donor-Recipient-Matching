@@ -1,15 +1,19 @@
 import React from 'react';
 import logo from '../assets/bloodlink-logo.svg';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation,useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAuth } from './AuthContext';
 import {
   faHandHoldingDroplet,
   faTruckDroplet,
   faHome,
   faUser,
   faCircleQuestion,
-  faBars
+  faBars,
+  faXmark,
+  faRightFromBracket
 } from '@fortawesome/free-solid-svg-icons';
+import { Droplets } from 'lucide-react';
 
 const menuItems = [
   { path: '/home/request', label: 'Request', icon: faHandHoldingDroplet },
@@ -19,8 +23,15 @@ const menuItems = [
   { path: '/home/about', label: 'About Us', icon: faCircleQuestion }
 ];
 
-function Sidebar() {
+const Sidebar=()=> {
   const location = useLocation();
+  const {logout} = useAuth();
+  const navigate =useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   return (
      <>
@@ -28,7 +39,7 @@ function Sidebar() {
       <input type="checkbox" id="sidebar-toggle" className="peer hidden" />
 
       {/* Hamburger for small devices */}
-      <label htmlFor="sidebar-toggle" className="sm:hidden fixed top-4 left-4 z-50 bg-white border border-gray-200 p-2 rounded shadow-md cursor-pointer">
+      <label htmlFor="sidebar-toggle" className="sm:hidden fixed top-6 left-4 z-30 bg-white border border-gray-200 p-2 rounded shadow-md cursor-pointer">
         <FontAwesomeIcon icon={faBars} className="text-xl text-red-600" />
       </label>
 
@@ -41,11 +52,14 @@ function Sidebar() {
         `}
       >
       <div className="h-full flex flex-col justify-center items-center">
-        <div className="absolute top-14 ">
+         <label htmlFor="sidebar-toggle" className="sm:hidden cursor-pointer absolute top-2 right-3 bg-white border border-gray-200 px-2 py-1 shadow">
+        <FontAwesomeIcon icon={faXmark} className="text-xl text-red-600" />
+      </label>
+        <div className="absolute top-12">
           <img src={logo}/>
         </div>
         
-        <nav className="w-full">
+        <nav className="mt-14 w-full">
           <ul className="flex flex-col items-center space-y-6">
             {menuItems.map((item, index) => {
               const isActive = location.pathname === item.path;
@@ -71,6 +85,16 @@ function Sidebar() {
                 </li>
               );
             })}
+
+            <li className="w-full flex justify-center">
+                <button
+                  onClick={handleLogout}
+                  className="flex flex-col items-center p-3 w-20 text-red-500 hover:bg-red-50 rounded-xl hover:shadow-sm transition-all duration-300"
+                >
+                  <FontAwesomeIcon icon={faRightFromBracket} className="text-xl mb-2" />
+                  <span className="text-xs font-medium">Logout</span>
+                </button>
+              </li>
           </ul>
         </nav>
         

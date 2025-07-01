@@ -6,7 +6,7 @@ function SidebarLayout() {
   return (
     <div className="flex h-screen"> {/* This is key! */}
       <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-red-50 py-15">
+      <main className="flex-1 overflow-y-auto bg-[#f9fafb] ">
         <Outlet />
       </main>
     </div>

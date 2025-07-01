@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 import { generateAccessToken } from "./authController.js"
-import User from "../models/user.js";
+import User from "../models/users.js";
 import HealthInfo from "../models/healthinfo.js";
+import RequestInfo from "../models/requestinfo.js";
+import DonationHistory from "../models/donationhistory.js";
 
 /*const verifyToken = (req, res, next) => {
     const token = req.cookies.token;
@@ -65,10 +67,16 @@ const fetchUser = async (req,res)=>{
       return res.status(404).json({ success: false, msg: "User not found" });
     }
 
+    // Count total donations and requests for this user
+    const totalDonations = await DonationHistory.countDocuments({ donor: req.user._id });
+    const totalRequests = await RequestInfo.countDocuments({ requester: req.user._id });
+
     res.json({
       success: true,
       user,
-      healthInfo
+      healthInfo,
+      totalDonations,
+      totalRequests
     });
   } catch (err) {
     console.error("Auth check error:", err);

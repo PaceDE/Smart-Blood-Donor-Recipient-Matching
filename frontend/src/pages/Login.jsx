@@ -11,6 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {  faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import { useAuth } from "../component/AuthContext";
+import { toast } from 'react-toastify';
 
 function Login() {
   const navigate = useNavigate();
@@ -50,10 +51,10 @@ function Login() {
 
       const data = await response.json();
       if (data.success) {
-        console.log("Login successful:", data);
+        toast.success("Login Succesfull")
         setIsSubmitting(false);
         
-        login(data.user,data.healthInfo);
+        login(data.user,data.healthInfo,data.totalRequests,data.totalDonations);
         if(data.user.role==="admin")
         {
           navigate("/admin");
@@ -61,6 +62,7 @@ function Login() {
         }
         navigate("/home");
       } else {
+        toast.error("Invalid credentials");
         setIsSubmitting(false);
         setLoginError(data.msg);
       }
@@ -68,6 +70,8 @@ function Login() {
       setIsSubmitting(false);
       setLoginError("Error occured.");
       console.error("Login failed:", error.message);
+      toast.error("Login Failed. Please try again later");
+
     }
   }
 

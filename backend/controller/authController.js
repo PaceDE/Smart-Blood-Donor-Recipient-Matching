@@ -1,15 +1,17 @@
-import User from "../models/user.js";
+import User from "../models/users.js";
 import HealthInfo from "../models/healthinfo.js";
+import RequestInfo from "../models/requestinfo.js";
+import DonationHistory from "../models/donationhistory.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const generateAccessToken = (user) => {
-    return jwt.sign({ _id: user._id, role: user.role, fullName: user.fullName }, process.env.ACCESS_TOKEN_SECRET, {
+    return jwt.sign({ _id: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
     });
 };
 const generateRefreshToken = (user) => {
-    return jwt.sign({ _id: user._id, role: user.role, fullName: user.fullName }, process.env.REFRESH_TOKEN_SECRET, {
+    return jwt.sign({ _id: user._id, role: user.role }, process.env.REFRESH_TOKEN_SECRET, {
         expiresIn: "7d",
     });
 };
@@ -69,6 +71,9 @@ const login = async (req, res) => {
         const refreshToken = generateRefreshToken(user);
         const { password:_, ...userData } = user._doc;
         const healthInfo = await HealthInfo.findOne({ user: user._id });
+        const totalDonations = await DonationHistory.countDocuments({ donor: user._id });
+        const totalRequests = await RequestInfo.countDocuments({ requester: user._id });
+
         res
             .cookie("accessToken", accessToken, {
                 httpOnly: true,
@@ -82,7 +87,7 @@ const login = async (req, res) => {
                 sameSite: "Strict",
                 maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
             })
-            .json({ success: true, msg: "Login successful", user: userData, healthInfo: healthInfo });
+            .json({ success: true, msg: "Login successful", user: userData, healthInfo: healthInfo,totalDonations:totalDonations,totalRequests:totalRequests });
     }
     catch (err) {
         console.error("Login Error:", err);
@@ -95,4 +100,29 @@ const logout = (req, res) => {
     res.clearCookie("accessToken").clearCookie("refreshToken").json({ success: true, msg: "Logged out" });
 };
 
-export { register, login, logout, generateAccessToken };
+const updatePersonalInfo = async (req,res) =>{
+    try {
+        
+        const userId = req.user._id; // from verifyToken middleware
+        const updates = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updates,
+            { new: true, runValidators: true }
+        );
+      
+
+        if (!updatedUser) {console.log("haha3");
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({user:updatedUser});
+    } catch (err) {
+        
+        console.error('Error updating user:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+export { register, login, logout, generateAccessToken,generateRefreshToken,updatePersonalInfo };
