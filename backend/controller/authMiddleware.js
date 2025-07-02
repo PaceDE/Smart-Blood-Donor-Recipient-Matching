@@ -42,7 +42,7 @@ const verifyToken = (req, res, next) => {
       });
 
       req.user = decodedRefresh;
-      return next(); // ✅ VERY IMPORTANT!
+      return next(); 
     } catch (err) {
       return res.status(403).json({ success: false, msg: "Invalid refresh token" });
     }
@@ -52,7 +52,7 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     req.user = decoded;
-    return next(); // ✅ You missed this!
+    return next(); 
   } catch (err) {
     return res.status(403).json({ success: false, msg: "Invalid access token" });
   }
