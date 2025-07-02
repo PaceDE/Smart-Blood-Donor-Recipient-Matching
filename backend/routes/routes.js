@@ -3,6 +3,7 @@ const router = express.Router();
 import { register,login,logout, updatePersonalInfo } from "../controller/authController.js";
 import { verifyToken,fetchUser } from "../controller/authMiddleware.js";
 import { getAppTrackingStats } from "../controller/trackingController.js";
+import { getVincenty } from "../controller/matchingController.js";
 
 router.post("/register", register);
 router.get('/auth-check',verifyToken, fetchUser);
@@ -12,5 +13,6 @@ router.post("/logout", logout);
 router.put("/updatePersonalInfo",verifyToken,updatePersonalInfo);
 
 router.get('/appTrackingStats',getAppTrackingStats);
+router.get('/vincenty',getVincenty);
 
 export { router };
