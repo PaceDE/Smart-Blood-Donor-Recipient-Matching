@@ -7,12 +7,13 @@ const RequestInfoSchema = new mongoose.Schema({
     enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], 
     required: true 
   },
+  urgency : {type:String},
+  description: { type: String },
+  hospital: {type:String},
+  searchDistance:{type:Number},
   address: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },
-  hospital: {type:String},
-  unitsNeeded: Number,
-  description: { type: String },
   status: { 
     type: String, 
     enum: ['pending', 'completed', 'canceled'], 

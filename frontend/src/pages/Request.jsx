@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TopBar from '../component/TopBar';
+import RequestForm from '../component/RequestForm';
 
 const Request = () => {
   const [existingRequest, setExistingRequest] = useState(null);
@@ -8,9 +9,9 @@ const Request = () => {
   useEffect(() => {
     const fetchUserRequest = async () => {
       try {
-        const res = await fetch("/api/currentRequest", {
+        const res = await fetch("http://localhost:5000/api/currentRequest", {
           method: "GET",
-          credentials: "include", // ✅ important to send cookies
+          credentials: "include", 
           headers: {
             "Content-Type": "application/json",
           },
@@ -43,7 +44,7 @@ const Request = () => {
       {existingRequest ? (
         <div>Request Exists</div>
       ) : (
-        <div>Request Form</div>
+        <RequestForm/>
       )}
       </main>
   </div>
