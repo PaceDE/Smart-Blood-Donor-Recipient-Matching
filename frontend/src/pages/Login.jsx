@@ -13,6 +13,7 @@ import {  faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import { useAuth } from "../component/AuthContext";
 import { toast } from 'react-toastify';
 import Footer from '../component/Footer';
+import OneSignal from 'react-onesignal';
 
 function Login() {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ function Login() {
         setIsSubmitting(false);
         
         login(data.user,data.healthInfo,data.totalDonations,data.totalRequests);
+        
         if(data.user.role==="admin")
         {
           navigate("/admin");

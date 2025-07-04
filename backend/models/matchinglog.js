@@ -5,9 +5,10 @@ const MatchingLogSchema = new mongoose.Schema({
   donor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   distance: { type: Number, required: true },
   matchedAt: { type: Date, default: Date.now },
+  notification_sent: { type: Boolean, default: false },
   status: {
     type: String,
-    enum: ['active', 'accepted', 'cancelled','completed'],
+    enum: ['active', 'accepted', 'declined','expired'],
     default: 'active'
   }
 },{ timestamps: true });

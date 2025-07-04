@@ -5,19 +5,23 @@ import { vincenty, isEligibleDonor } from "./matchingController.js";
 import MatchingLog from "../models/matchinglog.js";
 
 
-
+const currentRequest = async (req, res) => {
+    const request = await RequestInfo.findOne({
+        requester: req.user._id,
+        status: 'pending'
+    })
+   
+    res.json(request || null);
+}
 
 const createRequest = async (req, res) => {
     try {
-
         const { requestInfo } = req.body;
 
         if (!requestInfo) {
             return res.status(400).json({ message: "Missing data" });
         }
         
-       
-
         const bloodType = requestInfo.bloodType;
         const requesterId = req.user._id;
 
@@ -69,14 +73,35 @@ const createRequest = async (req, res) => {
 
 };
 
+const cancelRequest = async (req, res) => {
+  try {
+    const requestId = req.params.id;
 
-const currentRequest = async (req, res) => {
-    const request = await RequestInfo.findOne({
-        requester: req.user._id,
-        status: 'pending'
-    })
-   
-    res.json(request || null);
-}
+    const request = await RequestInfo.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
 
-export { currentRequest, createRequest };
+    // Update request status
+    request.status = 'canceled';
+    await request.save();
+
+    // Update all matching logs for this request
+    await MatchingLog.updateMany(
+      { request: requestId },
+      { $set: { status: 'expired' } }
+    );
+
+    res.json({ message: "Request cancelled and matching logs updated." });
+
+  } catch (err) {
+    console.error("Error cancelling request:", err);
+    res.status(500).json({ message: "Server error while cancelling request" });
+  }
+};
+
+
+
+
+
+export { currentRequest, createRequest, cancelRequest };

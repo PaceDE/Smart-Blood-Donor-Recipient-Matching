@@ -2,25 +2,25 @@ import mongoose from 'mongoose';
 
 const RequestInfoSchema = new mongoose.Schema({
   requester: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // who requested blood
-  bloodType: { 
-    type: String, 
-    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], 
-    required: true 
+  bloodType: {
+    type: String,
+    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+    required: true
   },
-  urgency : {type:String},
+  urgency: { type: String },
   description: { type: String },
-  hospital: {type:String},
-  searchDistance:{type:Number},
+  hospital: { type: String },
+  searchDistance: { type: Number },
   address: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },
-  matchedCount:{type:Number,default:0},
-  status: { 
-    type: String, 
-    enum: ['pending', 'completed', 'canceled'], 
-    default: 'pending' 
+  matchedCount: { type: Number, default: 0 },
+  status: {
+    type: String,
+    enum: ['pending', 'completed', 'canceled'],
+    default: 'pending'
   },
-},{ timestamps: true });
+}, { timestamps: true });
 
 
 const RequestInfo = mongoose.model('RequestInfo', RequestInfoSchema);

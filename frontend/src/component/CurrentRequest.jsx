@@ -1,7 +1,27 @@
 import React from 'react'
 import { Users, AlertTriangle, MapPin, Droplet } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const CurrentRequest = ({ existingRequest }) => {
+    const handleCancel = async () => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/cancelRequest/${existingRequest._id}`, {
+                method: 'PUT',
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to cancel request');
+            }
+
+            toast.success('Request cancelled successfully!');
+            setTimeout(() => {window.location.reload()}, 1500);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to cancel request');
+        }
+    };
+
     return (
         <main>
             <div className="border-l-4 border-l-red-500 bg-white rounded-2xl shadow-sm p-6">
@@ -51,6 +71,23 @@ const CurrentRequest = ({ existingRequest }) => {
                     <h1 className="text-2xl font-bold mb-4 border-b border-gray-300 pb-2">Request Detail</h1>
                     <p className="mb-2 text-gray-700"><span className="font-semibold">Description:</span> {existingRequest.description}</p>
                     <p className="mb-2 text-gray-700"><span className="font-semibold">Hospital/Facility:</span> {existingRequest.hospital}</p>
+                </div>
+
+                <div className="mt-6 text-center">
+                    <button
+                        onClick={handleCancel}
+                        className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-sm transition"
+                    >
+                        Cancel Request
+                    </button>
+                </div>
+                <div className="mt-6 text-center">
+                    <button
+                        onClick={handleCancel}
+                        className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-sm transition"
+                    >
+                        Request Completed
+                    </button>
                 </div>
             </div>
 

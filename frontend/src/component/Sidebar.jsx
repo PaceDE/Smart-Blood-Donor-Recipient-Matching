@@ -22,6 +22,7 @@ const menuItems = [
   { path: '/home/profile', label: 'Profile', icon: faUser },
   { path: '/home/about', label: 'About Us', icon: faCircleQuestion }
 ];
+import OneSignal from 'react-onesignal';
 
 const Sidebar=()=> {
   const location = useLocation();
@@ -30,6 +31,7 @@ const Sidebar=()=> {
 
   const handleLogout = async () => {
     await logout();
+    await OneSignal.removeExternalUserId();
     navigate("/");
   };
 
