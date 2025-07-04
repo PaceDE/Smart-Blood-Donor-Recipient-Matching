@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import TopBar from '../component/TopBar';
 import RequestForm from '../component/RequestForm';
+import CurrentRequest from '../component/CurrentRequest';
 
 const Request = () => {
   const [existingRequest, setExistingRequest] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ fixed typo
+  const [loading, setLoading] = useState(true); 
+  const[matchedCount,setMatchedCount]=useState(0);
 
   useEffect(() => {
     const fetchUserRequest = async () => {
@@ -42,9 +44,9 @@ const Request = () => {
       <TopBar heading={"Blood request"} text={`Connect with Blood Donor in your area.`} />
       <main className="flex-1 p-6">
       {existingRequest ? (
-        <div>Request Exists</div>
+        <CurrentRequest existingRequest={existingRequest}/>
       ) : (
-        <RequestForm/>
+        <RequestForm />
       )}
       </main>
   </div>

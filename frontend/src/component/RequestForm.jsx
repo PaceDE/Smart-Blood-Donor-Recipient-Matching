@@ -1,8 +1,9 @@
-import React, { useState,setTimeout } from 'react';
+import React, { useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import LocationPicker from './LocationPicker';
 import { toast } from 'react-toastify';
+
 
 const RequestForm = () => {
     const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -65,6 +66,7 @@ const RequestForm = () => {
       credentials: "include", // sends cookies (for JWT/session auth)
       body: JSON.stringify({requestInfo}),
     });
+    const data=await res.json()
 
 
     if (!res.ok) {
@@ -72,7 +74,7 @@ const RequestForm = () => {
     }
 
     toast.success("Blood request submitted successfully!");
-    setTimeout(() => window.location.reload(), 1500);
+    setTimeout(() => {window.location.reload()}, 1500);
     
   } catch (err) {
     console.error("Submit error:", err);

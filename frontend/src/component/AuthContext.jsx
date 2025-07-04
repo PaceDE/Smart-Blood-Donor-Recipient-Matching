@@ -61,8 +61,6 @@ export const AuthProvider = ({ children }) => {
     setHealthInfo(healthInfo);
     setTotalDonations(totalDonations);
     setTotalRequests(totalRequests);
-    setTotalDonations(0);
-    setTotalRequests(0);
     setIsLoggedIn(true);
   };
 

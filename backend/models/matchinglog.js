@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const MatchingLogSchema = new mongoose.Schema({
   request: { type: mongoose.Schema.Types.ObjectId, ref: 'RequestInfo', required: true },
   donor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  distance: { type: Number, required: true },
   matchedAt: { type: Date, default: Date.now },
   status: {
     type: String,

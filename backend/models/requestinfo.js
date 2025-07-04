@@ -14,6 +14,7 @@ const RequestInfoSchema = new mongoose.Schema({
   address: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },
+  matchedCount:{type:Number,default:0},
   status: { 
     type: String, 
     enum: ['pending', 'completed', 'canceled'], 

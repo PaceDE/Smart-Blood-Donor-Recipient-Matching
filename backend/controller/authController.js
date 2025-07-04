@@ -113,7 +113,7 @@ const updatePersonalInfo = async (req,res) =>{
         );
       
 
-        if (!updatedUser) {console.log("haha3");
+        if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
         }
 

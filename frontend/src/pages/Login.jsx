@@ -55,7 +55,7 @@ function Login() {
         toast.success("Login Succesfull")
         setIsSubmitting(false);
         
-        login(data.user,data.healthInfo,data.totalRequests,data.totalDonations);
+        login(data.user,data.healthInfo,data.totalDonations,data.totalRequests);
         if(data.user.role==="admin")
         {
           navigate("/admin");
