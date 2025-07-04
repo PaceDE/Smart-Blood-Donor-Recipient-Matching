@@ -2,17 +2,21 @@ import React, { useState, useEffect } from 'react';
 import TopBar from '../component/TopBar';
 import Loading from '../component/Loading';
 import { toast } from 'react-toastify';
-import { MapPin } from 'lucide-react';
+import { MapPin, BadgeCheck, Heart } from 'lucide-react';
+import { useAuth } from '../component/AuthContext';
+import { checkEligibility } from './Home';
 
 const Donate = () => {
   const [filterUrgency, setFilterUrgency] = useState('');
   const [matchedLog, setMatchedLog] = useState([]);
-  const [isLoading, setIsloading] = useState(false);
+  const [loading, setLoading] = useState(false);
+   const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
+  const eligible = checkEligibility(user,healthInfo);
 
   useEffect(() => {
     const fetchMatchedLogs = async () => {
       try {
-        setIsloading(true);
+        setLoading(true);
 
         const response = await fetch('http://localhost:5000/api/matchedLog', {
           method: 'GET',
@@ -28,7 +32,7 @@ const Donate = () => {
       } catch (error) {
         console.error('Error fetching matched logs:', error);
       } finally {
-        setIsloading(false);
+        setLoading(false);
       }
     };
 
@@ -60,6 +64,7 @@ const Donate = () => {
     }
   };
 
+  
 
   return (
     <div className="flex flex-col">
@@ -68,7 +73,35 @@ const Donate = () => {
         text={`As a donor, you can view and respond to nearby blood requests `}
       />
 
-      {isLoading ? (
+      <div className="mt-5 w-full mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <div className={`mb-8 bg-gradient-to-r from-green-50 to-green-100 border rounded-xl shadow-sm p-6 ${eligible? "from-green-50 to-green-100 border-green-200": "from-red-50 to-red-100 border-red-200"}`}>
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            {/* Profile Info */}
+            <div className="flex items-center space-x-4 mb-4 md:mb-0">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                <Heart className="h-8 w-8 text-white" fill="currentColor" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{user.fullName}</h2>
+                <p className="text-gray-600">
+                  Blood Type:{' '}
+                  <span className="font-semibold text-red-600">
+                    {user.bloodType}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* Availability Badge */}
+            <div className={`flex items-center  text-white text-sm font-semibold px-3 py-1 rounded-full ${eligible? "bg-green-500": "bg-red-500"}`}>
+              <BadgeCheck className="h-4 w-4 mr-1" />
+              {eligible?"Available to DOnate" : "Not Available to DOnate"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
         <Loading loadingText="Fetching nearby blood requests..." />
       ) : (
         <main className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
@@ -110,9 +143,9 @@ const Donate = () => {
                       <div>
                         <h1 className="font-semibold text-xl">{req.fullName || 'Unknown Name'}</h1>
                         <p className="text-sm text-gray-500">{req.email}</p>
-                         
+
                       </div>
-                
+
                     </div>
 
                     <div>
@@ -134,9 +167,9 @@ const Donate = () => {
 
                   <div className="space-y-2 text-sm leading-relaxed">
                     <p className="text-gray-600 text-sm flex items-center">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {req.distance} km away.
-                        </p>
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {req.distance} km away.
+                    </p>
                     <p>
                       <span className="font-medium text-gray-700">Blood Type:</span>{' '}
                       <span className="font-bold text-red-600">{req.bloodType}</span>

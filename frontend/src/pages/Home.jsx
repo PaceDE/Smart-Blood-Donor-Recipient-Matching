@@ -5,23 +5,7 @@ import TopBar from '../component/TopBar';
 import { Users, Droplets, Heart, TrendingUp } from "lucide-react";
 import DoughnutChart from '../component/DoughnutChart';
 
-export default function Home() {
-  const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
-  const { stats, loading } = useAppTracking();
-
-  const bloodTypeDistribution = stats?.bloodTypeDistribution || {};
-
-  const labels = Object.keys(bloodTypeDistribution);
-  const values = Object.values(bloodTypeDistribution);
-  const colors = ['#EF4444', '#F97316', '#EAB308', '#84CC16',
-    '#22C55E', '#14B8A6', '#3B82F6', '#8B5CF6'];
-
-  const milestones = [5, 10, 15, 25, 50, 100];
-  const currentMilestone = milestones.find(m => m > totalDonations) || milestones[milestones.length - 1];
-  var progress = Math.min(100, ((totalDonations * 100) / currentMilestone));
-  progress = progress === 0 ? 1 : progress;
-
-  const checkEligibility = () => {
+const checkEligibility = (user,healthInfo) => {
     if (!user || !healthInfo) return false;
 
     const today = new Date();
@@ -49,7 +33,25 @@ export default function Home() {
     return isAgeValid && isWeightValid && lastDonationValid && gaveBirthValid && piercingValid && noDisease;
   };
 
-  const eligible = checkEligibility();
+export default function Home() {
+  const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
+  const { stats, loading } = useAppTracking();
+
+  const bloodTypeDistribution = stats?.bloodTypeDistribution || {};
+
+  const labels = Object.keys(bloodTypeDistribution);
+  const values = Object.values(bloodTypeDistribution);
+  const colors = ['#EF4444', '#F97316', '#EAB308', '#84CC16',
+    '#22C55E', '#14B8A6', '#3B82F6', '#8B5CF6'];
+
+  const milestones = [5, 10, 15, 25, 50, 100];
+  const currentMilestone = milestones.find(m => m > totalDonations) || milestones[milestones.length - 1];
+  var progress = Math.min(100, ((totalDonations * 100) / currentMilestone));
+  progress = progress === 0 ? 1 : progress;
+
+  
+
+  const eligible = checkEligibility(user,healthInfo);
 
   if (loading || isLoading)
     return <p>Loading...</p>
@@ -169,4 +171,6 @@ export default function Home() {
     </div>
   );
 }
+
+export {checkEligibility};
 
