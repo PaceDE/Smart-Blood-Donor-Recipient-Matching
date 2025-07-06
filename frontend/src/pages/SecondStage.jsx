@@ -22,7 +22,6 @@ export default function SecondStage() {
 
   const [healthInfo, setHealthInfo] = useState({
     total_donations: '',
-    first_donation_date: '',
     last_donation_date: '',
     has_disease: false,
     recently_gave_birth: '',
@@ -42,14 +41,14 @@ export default function SecondStage() {
   const validateForm = () => {
     const newErrors = {};
     if (healthInfo.total_donations!== '' && parseInt(healthInfo.total_donations) !== 0) {
-      if(healthInfo.first_donation_date=== '')
-        newErrors.first_donation_date = "This field is required";
       if(healthInfo.last_donation_date==='')
         newErrors.last_donation_date = "This field is required";
     }
 
     if (healthInfo.total_donations === '') newErrors.total_donations = "This field is required";
+    if (healthInfo.total_donations < 0 ) newErrors.total_donations = "Total donation can''t be negative";
     if (healthInfo.weight_kg === '') newErrors.weight_kg = "Weight is required";
+    if (healthInfo.weight_kg < 0) newErrors.weight_kg = "Weight can't be negative";
     if (!healthInfo.willingness_level) newErrors.willingness_level = "Willingness level is required";
     if (!agreeToTerms) newErrors.agreeToTerms = "You must agree to the terms and conditions";
 
@@ -66,8 +65,7 @@ export default function SecondStage() {
 
     // If no donations, assign default placeholder dates
     if (parseInt(healthData.total_donations) === 0) {
-      healthData.first_donation_date = '';
-      healthData.last_donation_date = '';
+      delete healthData.last_donation_date;
     }
 
     const userData = { userInfo, healthInfo: healthData };
@@ -129,18 +127,6 @@ export default function SecondStage() {
                   className="w-full border border-gray-300 rounded p-2"
                 />
                 {errors.total_donations && <p className="text-red-500 text-sm">{errors.total_donations}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="first_donation_date" className={"block mb-1 font-medium"}>First Donation Date</label>
-                <input
-                  id="first_donation_date"
-                  type="date"
-                  value={healthInfo.first_donation_date}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded p-2"
-                />
-                {errors.first_donation_date && <p className="text-red-500 text-sm">{errors.first_donation_date}</p>}
               </div>
 
               <div>

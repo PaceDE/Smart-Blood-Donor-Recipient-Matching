@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import LocationPicker from './LocationPicker';
@@ -46,8 +46,8 @@ const RequestForm = () => {
     };
 
 
-    const handleSubmit =  async(e) => {
-        if(!validateForm())
+    const handleSubmit = async (id) => {
+        if (!validateForm())
             return
 
         const requestInfo = {
@@ -57,29 +57,29 @@ const RequestForm = () => {
             address: coordinates.address,
         };
 
-         try {
-    const res = await fetch("http://localhost:5000/api/request", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include", // sends cookies (for JWT/session auth)
-      body: JSON.stringify({requestInfo}),
-    });
-    const data=await res.json()
+        try {
+            const res = await fetch(`http://localhost:5000/api/request/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include", // sends cookies (for JWT/session auth)
+                body: JSON.stringify({ requestInfo }),
+            });
+            const data = await res.json()
 
 
-    if (!res.ok) {
-      throw new Error(data.message || "Request failed.");
-    }
+            if (!res.ok) {
+                throw new Error(data.message || "Request failed.");
+            }
 
-    toast.success("Blood request submitted successfully!");
-    setTimeout(() => {window.location.reload()}, 1500);
-    
-  } catch (err) {
-    console.error("Submit error:", err);
-    toast.error(err.message || "Failed to submit request.");
-  }
+            toast.success("Blood request submitted successfully!");
+            setTimeout(() => { window.location.reload() }, 1500);
+
+        } catch (err) {
+            console.error("Submit error:", err);
+            toast.error(err.message || "Failed to submit request.");
+        }
 
     }
 
@@ -183,13 +183,22 @@ const RequestForm = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <div>
+                        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
                             <button
                                 type="button"
-                                className="text-center text-white bg-red-500 w-full p-3 rounded-2xl bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800"
-                                onClick={handleSubmit}
+                                className="flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition duration-200"
+                                onClick={() => handleSubmit(1)}
                             >
-                                Submit
+                                Find Nearby *Willing* Donors
+                            </button>
+
+                            {/* Button for all eligible donors */}
+                            <button
+                                type="button"
+                                className="flex items-center justify-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition duration-200"
+                                onClick={() => handleSubmit(0)}
+                            >
+                                Find *All* Nearby Donors
                             </button>
                         </div>
 

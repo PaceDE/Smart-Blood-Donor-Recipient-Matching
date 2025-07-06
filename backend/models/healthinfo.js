@@ -3,8 +3,9 @@ import mongoose from 'mongoose';
 const healthInfoSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   total_donations: { type: Number, required: true },
-  first_donation_date: { type: Date },
-  last_donation_date: { type: Date },
+  last_donation_date: { 
+    type: Date, default: new Date('2000-01-01') 
+  },
   has_disease: { type: Boolean, default: false },
 
   recently_gave_birth: {

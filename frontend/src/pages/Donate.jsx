@@ -7,11 +7,12 @@ import { useAuth } from '../component/AuthContext';
 import { checkEligibility } from './Home';
 
 const Donate = () => {
-  const [filterUrgency, setFilterUrgency] = useState('');
+  const [filterUrgency, setFilterUrgency] = useState('All');
   const [matchedLog, setMatchedLog] = useState([]);
+  const [filteredLog, setFilteredLog] = useState([])
   const [loading, setLoading] = useState(false);
-   const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
-  const eligible = checkEligibility(user,healthInfo);
+  const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
+  const eligible = checkEligibility(user, healthInfo);
 
   useEffect(() => {
     const fetchMatchedLogs = async () => {
@@ -20,7 +21,7 @@ const Donate = () => {
 
         const response = await fetch('http://localhost:5000/api/matchedLog', {
           method: 'GET',
-          credentials: 'include', // if using cookies/sessions
+          credentials: 'include', 
         });
 
         if (!response.ok) {
@@ -29,6 +30,7 @@ const Donate = () => {
 
         const data = await response.json();
         setMatchedLog(data);
+        setFilteredLog(data)
       } catch (error) {
         console.error('Error fetching matched logs:', error);
       } finally {
@@ -64,7 +66,20 @@ const Donate = () => {
     }
   };
 
-  
+  const handleFilter = (e) => {
+    const selected = e.target.value;
+    setFilterUrgency(selected);
+
+    if (selected === "All") 
+      setFilteredLog(matchedLog);
+    else 
+      setFilteredLog(matchedLog.filter(log => log.urgency.toLowerCase() === selected.toLowerCase()));
+    
+  };
+
+
+
+
 
   return (
     <div className="flex flex-col">
@@ -74,7 +89,7 @@ const Donate = () => {
       />
 
       <div className="mt-5 w-full mx-auto px-4 sm:px-6 lg:px-8 z-10">
-        <div className={`mb-8 bg-gradient-to-r from-green-50 to-green-100 border rounded-xl shadow-sm p-6 ${eligible? "from-green-50 to-green-100 border-green-200": "from-red-50 to-red-100 border-red-200"}`}>
+        <div className={`mb-8 bg-gradient-to-r from-green-50 to-green-100 border rounded-xl shadow-sm p-6 ${eligible ? "from-green-50 to-green-100 border-green-200" : "from-red-50 to-red-100 border-red-200"}`}>
           <div className="flex flex-col md:flex-row items-center justify-between">
             {/* Profile Info */}
             <div className="flex items-center space-x-4 mb-4 md:mb-0">
@@ -93,9 +108,9 @@ const Donate = () => {
             </div>
 
             {/* Availability Badge */}
-            <div className={`flex items-center  text-white text-sm font-semibold px-3 py-1 rounded-full ${eligible? "bg-green-500": "bg-red-500"}`}>
+            <div className={`flex items-center  text-white text-sm font-semibold px-3 py-1 rounded-full ${eligible ? "bg-green-500" : "bg-red-500"}`}>
               <BadgeCheck className="h-4 w-4 mr-1" />
-              {eligible?"Available to DOnate" : "Not Available to DOnate"}
+              {eligible ? "Available to DOnate" : "Not Available to DOnate"}
             </div>
           </div>
         </div>
@@ -105,32 +120,38 @@ const Donate = () => {
         <Loading loadingText="Fetching nearby blood requests..." />
       ) : (
         <main className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
-          <div className="mb-8 flex justify-between">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Available Blood Requests</h2>
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
-              <select
-                value={filterUrgency}
-                onChange={(e) => setFilterUrgency(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                <option value="">All</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
+          <div className="mb-8 flex justify-between items-center flex-wrap">
+            <div className=' flex gap-4 items-center w-full md:w-2/3'>
+              <p className='bg-red-500 text-md font-semibold text-white p-1 px-5 rounded-full'>{filteredLog.length} Active</p>
+              <h2 className="text-2xl font-bold text-gray-800">Blood Requests</h2>
+            </div>
+            <div className='w-full md:w-1/3'>
+              <div className="flex flex-col md:flex-row-reverse gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
+                  <select
+                    value={filterUrgency}
+                    onChange={handleFilter}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    <option value="All">All</option>
+                    <option value="Low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Filters */}
+
+
           {/* Matching Request Results */}
           <div className=" p-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {matchedLog.length > 0 ? (
-              matchedLog.map((req, index) => (
+            {filteredLog.length > 0 ? (
+              filteredLog.map((req, index) => (
                 <div
                   key={index}
                   className="border p-6 rounded-2xl shadow-xl border-red-200 text-gray-800 bg-white hover:shadow-2xl transition duration-200 mb-6"

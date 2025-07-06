@@ -150,9 +150,6 @@ const PersonalInfo = () => {
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
         if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
 
-        /*if (!coordinates.address) {
-            newErrors.address = "Please select your location on the map";
-        }*/
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;

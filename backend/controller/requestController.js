@@ -1,7 +1,7 @@
 
 import HealthInfo from "../models/healthinfo.js";
 import RequestInfo from "../models/requestinfo.js";
-import { vincenty, isEligibleDonor } from "./matchingController.js";
+import { vincenty,isEligibleDonor,predict } from "../utils/algorithm.js";
 import MatchingLog from "../models/matchinglog.js";
 
 
@@ -17,6 +17,7 @@ const currentRequest = async (req, res) => {
 const createRequest = async (req, res) => {
     try {
         const { requestInfo } = req.body;
+        const id = req.params.id;
 
         if (!requestInfo) {
             return res.status(400).json({ message: "Missing data" });
@@ -38,7 +39,16 @@ const createRequest = async (req, res) => {
 
         const today = new Date();
         const eligibleDonors = validMatches.filter(h => isEligibleDonor(h, today));
-        const nearbyDonors = eligibleDonors
+        let willingDonors;
+        if(id==1)
+        {
+            willingDonors= eligibleDonors.filter(d => predict(d.total_donations, d.last_donation_date,d.willingness_level));
+        }
+        else
+        {
+            willingDonors = eligibleDonors;
+        }
+        const nearbyDonors = willingDonors
             .map(donor => {
                 const distance = vincenty(
                     requestInfo.latitude,
@@ -73,30 +83,35 @@ const createRequest = async (req, res) => {
 
 };
 
-const cancelRequest = async (req, res) => {
+const updateRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
+    const { status } = req.body;
+
+    if (!["canceled", "completed"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status provided" });
+    }
 
     const request = await RequestInfo.findById(requestId);
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Update request status
-    request.status = 'canceled';
+    // Update the request status
+    request.status = status;
     await request.save();
 
-    // Update all matching logs for this request
+    // Matching Log will be expired
     await MatchingLog.updateMany(
       { request: requestId },
       { $set: { status: 'expired' } }
     );
 
-    res.json({ message: "Request cancelled and matching logs updated." });
+    res.json({ message: `Request marked as ${status} and matching logs updated.` });
 
   } catch (err) {
-    console.error("Error cancelling request:", err);
-    res.status(500).json({ message: "Server error while cancelling request" });
+    console.error("Error updating request:", err);
+    res.status(500).json({ message: "Server error while updating request" });
   }
 };
 
@@ -104,4 +119,4 @@ const cancelRequest = async (req, res) => {
 
 
 
-export { currentRequest, createRequest, cancelRequest };
+export { currentRequest, createRequest, updateRequest };
