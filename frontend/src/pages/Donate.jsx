@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { MapPin, BadgeCheck, Heart } from 'lucide-react';
 import { useAuth } from '../component/AuthContext';
 import { checkEligibility } from './Home';
+import Chat from '../component/Chat';
 
 const Donate = () => {
   const [filterUrgency, setFilterUrgency] = useState('All');
@@ -13,6 +14,7 @@ const Donate = () => {
   const [loading, setLoading] = useState(false);
   const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
   const eligible = checkEligibility(user, healthInfo);
+  const[chatOpen,setChatOpen]=useState(false);
 
   useEffect(() => {
     const fetchMatchedLogs = async () => {
@@ -41,7 +43,6 @@ const Donate = () => {
     fetchMatchedLogs();
   }, []);
 
-  // Inside the Donate component
 
   const handleStatusUpdate = async (logId, newStatus) => {
     try {
@@ -78,9 +79,6 @@ const Donate = () => {
   };
 
 
-
-
-
   return (
     <div className="flex flex-col">
       <TopBar
@@ -107,7 +105,7 @@ const Donate = () => {
               </div>
             </div>
 
-            {/* Availability Badge */}
+           
             <div className={`flex items-center  text-white text-sm font-semibold px-3 py-1 rounded-full ${eligible ? "bg-green-500" : "bg-red-500"}`}>
               <BadgeCheck className="h-4 w-4 mr-1" />
               {eligible ? "Available to DOnate" : "Not Available to DOnate"}
@@ -226,9 +224,10 @@ const Donate = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 font-bold">
-                        <button className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                        <button onClick={()=>{setChatOpen(true)}} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                           Start a Conversation
                         </button>
+                        {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={req.userId} name={req.fullName} requestId={req.requestId}/>}
                       </div>
                     )}
                   </div>

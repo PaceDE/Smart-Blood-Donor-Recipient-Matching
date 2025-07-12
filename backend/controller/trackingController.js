@@ -54,7 +54,6 @@ export const getAppTrackingStats = async (req, res) => {
     const requestGrowth = requestThisMonth === 0 ? 0 : (requestLastMonth === 0 ? 100:  ((requestThisMonth - requestLastMonth) / requestLastMonth) * 100 );
 
 
-    // Format blood group data into an object
     const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
     const bloodTypeDistribution = {};
     for (const type of bloodTypes) {

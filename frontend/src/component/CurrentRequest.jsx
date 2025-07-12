@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Users, AlertTriangle, MapPin, Droplet, XCircle, CheckCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Chat from './Chat';
+import { useAuth } from './AuthContext';
 
 const CurrentRequest = ({ existingRequest }) => {
     const [loading, setLoading] = useState(false);
     const [acceptedLog, setAcceptedLog] = useState([]);
-    const [filteredLog, setFilteredLog] = useState([])
+    const [filteredLog, setFilteredLog] = useState([]);
+    const[chatOpen,setChatOpen]=useState(false);
+    const {user} =useAuth();
 
     useEffect(() => {
         const fetchAcceptedLogs = async () => {
@@ -210,9 +214,10 @@ const CurrentRequest = ({ existingRequest }) => {
 
                             <div className="actions mt-4">                              
                                     <div className="grid grid-cols-1 gap-2 font-bold">
-                                        <button className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                                        <button onClick={()=>{setChatOpen(true)}} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                                             Start a Conversation
                                         </button>
+                                        {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={log.donorId} name={log.fullName} requestId={existingRequest._id}/>}
                                         <button onClick={() => handleLogStatus(log._id, 'declined')} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
                                             Decline
                                         </button>

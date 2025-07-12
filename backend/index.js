@@ -4,6 +4,10 @@ import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 import { conn } from "./db.js"; 
 import { router } from "./routes/routes.js";
+import {createServer} from 'http';
+import { WebSocketServer } from "ws";
+import { setupWebSocket } from "./websocket/socket.js";
+
 
 dotenv.config();
 
@@ -18,6 +22,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 
+const server= createServer(app);
+setupWebSocket(server);
 conn()
   .then(()=>{
     console.log("Connected to MongoDB");
@@ -28,8 +34,8 @@ conn()
       res.send('Hello World!')
     });
 
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
+    server.listen(PORT, () => {
+      console.log(`HTTP + WebSocket Server running at http://localhost:${PORT}`);
     });
 
   })

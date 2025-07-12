@@ -56,7 +56,7 @@ const matchedLog = async (req, res) => {
                 populate: {
                     path: 'requester',
                     model: 'User',
-                    select: 'fullName phone address email'
+                    select: '_id fullName phone address email'
                 }
             });
 
@@ -70,11 +70,13 @@ const matchedLog = async (req, res) => {
                 status: log.status,
                 distance: log.distance,
                 requestId: log.request._id,
+                
                 bloodType: log.request.bloodType,
                 urgency: log.request.urgency,
                 hospital: log.request.hospital,
                 address: log.request.address,
                 description: log.request.description,
+                userId:log.request.requester._id,
                 fullName: log.request.requester.fullName,
                 phone: log.request.requester.phone,
                 email: log.request.requester.email,
