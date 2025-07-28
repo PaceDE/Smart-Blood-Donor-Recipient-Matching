@@ -6,7 +6,7 @@ import { getAppTrackingStats } from "../controller/trackingController.js";
 import { currentRequest } from "../controller/requestController.js";
 import { getVincenty,pendingNotifications,markNotification,matchedLog,updateMatchLog,acceptedLog } from "../controller/matchingController.js";
 import { createRequest,updateRequest } from "../controller/requestController.js";
-import { getMessages } from "../controller/messageController.js";
+import { getMessages,messageRead,messageNotification } from "../controller/messageController.js";
 
 router.post("/register", register);
 router.get('/auth-check',verifyToken, fetchUser);
@@ -27,5 +27,7 @@ router.patch('/updateMatchLog/:id',verifyToken,updateMatchLog)
 router.get('/acceptedLog/:id',verifyToken,acceptedLog)
 
 router.get('/getMessages',verifyToken,getMessages)
+router.put('/messageRead',verifyToken,messageRead)
+router.put('/messageNotification',verifyToken,messageNotification)
 
 export { router };

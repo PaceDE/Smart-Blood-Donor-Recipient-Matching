@@ -6,10 +6,19 @@ const messageSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  senderName:{
+    type:String,
+    required:true,
+  },
   recipient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+  },
+  recipientRole: {
+    type:String,
+    enum:["donor","requester"],
+    required:true,
   },
   requestId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -26,8 +35,13 @@ const messageSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["sent", "delivered", "read"],
+    enum: ["sent", "read"],
     default: "sent",
+  },
+  notificationStatus:{
+    type: String,
+    enum: ["sent", "notsent"],
+    default: "notsent",
   }
 });
 

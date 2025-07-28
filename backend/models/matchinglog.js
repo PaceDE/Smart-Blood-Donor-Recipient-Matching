@@ -8,7 +8,7 @@ const MatchingLogSchema = new mongoose.Schema({
   notification_sent: { type: Boolean, default: false },
   status: {
     type: String,
-    enum: ['active', 'accepted', 'declined','expired'],
+    enum: ['active', 'accepted', 'declined','donated','expired'],
     default: 'active'
   }
 },{ timestamps: true });

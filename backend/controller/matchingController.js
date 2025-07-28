@@ -95,7 +95,7 @@ const updateMatchLog = async (req, res) => {
         const { status } = req.body;
 
         // Validate input
-        const validStatuses = ['accepted', 'declined', 'active', 'expired'];
+        const validStatuses = ['active','accepted', 'declined', 'donated', 'expired'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ error: 'Invalid status value' });
         }

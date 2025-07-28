@@ -1,8 +1,9 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import logo from '../assets/bloodlink-logo.svg';
-import { Link, useLocation,useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate} from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from './AuthContext';
+import { useSocket } from './SocketContext';
 import {
   faHandHoldingDroplet,
   faTruckDroplet,
@@ -24,10 +25,33 @@ const menuItems = [
 ];
 import OneSignal from 'react-onesignal';
 
-const Sidebar=()=> {
+const Sidebar = () => {
   const location = useLocation();
-  const {logout} = useAuth();
-  const navigate =useNavigate();
+  const { logout, user } = useAuth();
+  const { socket, messages, messageLoading } = useSocket();
+  const [donateSectionMsg, setDonateSectionMsg] = useState(0);
+  const [requestSectionMsg, setRequestSectionMsg] = useState(0);
+  useEffect(() => {
+    let donateCount = 0;
+    let requestCount = 0;
+
+    for (const msg of messages) {
+      console.log("role"+msg.recipientRole+"status:"+msg.status)
+      if (msg.recipient === user._id && msg.status === "sent") {
+        if (msg.recipientRole === "donor") {
+          donateCount++;
+        } else {
+          requestCount++;
+        }
+      }
+    }
+
+    setDonateSectionMsg(donateCount);
+    setRequestSectionMsg(requestCount);
+  }, [messages, user._id]);
+  const navigate = useNavigate();
+  console.log("Donate:"+donateSectionMsg);
+  console.log("Request:"+requestSectionMsg);
 
   const handleLogout = async () => {
     await logout();
@@ -36,7 +60,7 @@ const Sidebar=()=> {
   };
 
   return (
-     <>
+    <>
       {/* Sidebar Toggle (Checkbox Hack) */}
       <input type="checkbox" id="sidebar-toggle" className="peer hidden" />
 
@@ -53,51 +77,62 @@ const Sidebar=()=> {
           -translate-x-full peer-checked:translate-x-0 sm:translate-x-0
         `}
       >
-      <div className="h-full flex flex-col justify-center items-center">
-         <label htmlFor="sidebar-toggle" className="sm:hidden cursor-pointer absolute top-2 right-3 bg-white border border-gray-200 px-2 py-1 shadow">
-        <FontAwesomeIcon icon={faXmark} className="text-xl text-red-600" />
-      </label>
-        <div className="absolute top-12">
-          <img src={logo}/>
-        </div>
-        
-        <nav className="mt-14 w-full">
-          <ul className="flex flex-col items-center space-y-6">
-            {menuItems.map((item, index) => {
-              const isActive = location.pathname === item.path;
+        <div className="h-full flex flex-col justify-center items-center">
+          <label htmlFor="sidebar-toggle" className="sm:hidden cursor-pointer absolute top-2 right-3 bg-white border border-gray-200 px-2 py-1 shadow">
+            <FontAwesomeIcon icon={faXmark} className="text-xl text-red-600" />
+          </label>
+          <div className="absolute top-12">
+            <img src={logo} />
+          </div>
 
-              return (
-                <li key={index} className="w-full flex justify-center">
-                  <Link
-                    to={item.path}
-                    className={`flex flex-col items-center p-3 w-20 transition-all duration-300 ease-in-out 
-                      ${isActive 
-                        ? 'text-white text-sm bg-red-500 rounded-xl shadow-lg transform -translate-y-1' 
-                        : 'text-red-500 hover:bg-red-50 rounded-xl hover:shadow-sm'
-                      }`}
-                  >
-                    <FontAwesomeIcon 
-                      icon={item.icon} 
-                      className={`text-xl mb-2 ${isActive ? 'scale-110 text-white' : 'text-red-500'}`} 
-                    />
-                    <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-red-500'}`}>
-                      {item.label}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        
-        <div className="absolute bottom-5 text-red-400 text-xs text-center opacity-70">
-          © 2025 <br />
-          
+          <nav className="mt-14 w-full">
+            <ul className="flex flex-col items-center space-y-6">
+              {menuItems.map((item, index) => {
+                const isActive = location.pathname === item.path;
+
+                return (
+                  <li key={index} className="w-full flex justify-center">
+                    <Link
+                      to={item.path}
+                      className={`relative flex flex-col items-center p-3 w-20 transition-all duration-300 ease-in-out 
+                      ${isActive
+                          ? 'text-white text-sm bg-red-500 rounded-xl shadow-lg transform -translate-y-1'
+                          : 'text-red-500 hover:bg-red-50 rounded-xl hover:shadow-sm'
+                        }`}
+                    >
+                      {index === 0 && requestSectionMsg > 0 && (
+                        <span className="absolute top-1 right-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                          {requestSectionMsg}
+                        </span>
+                      )}
+                      {index === 1 && donateSectionMsg > 0 && (
+                        <span className="absolute top-1 right-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                          {donateSectionMsg}
+                        </span>
+                      )}
+
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        className={`text-xl mb-2 ${isActive ? 'scale-110 text-white' : 'text-red-500'}`}
+                      />
+                      <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-red-500'}`}>
+                        {item.label}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <div className="absolute bottom-5 text-red-400 text-xs text-center opacity-70">
+            © 2025 <br />
+
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
     </>
-   
+
   );
 }
 

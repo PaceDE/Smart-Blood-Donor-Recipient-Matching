@@ -3,6 +3,7 @@ import HealthInfo from "../models/healthinfo.js";
 import RequestInfo from "../models/requestinfo.js";
 import { vincenty,isEligibleDonor,predict } from "../utils/algorithm.js";
 import MatchingLog from "../models/matchinglog.js";
+import Message from "../models/message.js";
 
 
 const currentRequest = async (req, res) => {
@@ -106,6 +107,11 @@ const updateRequest = async (req, res) => {
       { request: requestId },
       { $set: { status: 'expired' } }
     );
+
+    await Message.deleteMany({
+        requestId:requestId
+    })
+   
 
     res.json({ message: `Request marked as ${status} and matching logs updated.` });
 

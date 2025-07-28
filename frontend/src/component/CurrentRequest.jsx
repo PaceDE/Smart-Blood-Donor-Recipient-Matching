@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Users, AlertTriangle, MapPin, Droplet, XCircle, CheckCircle } from 'lucide-react';
+import { Send, Users, AlertTriangle, MapPin, Droplet, XCircle, CheckCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Chat from './Chat';
 import { useAuth } from './AuthContext';
+import Review from './Review';
+
+
 
 const CurrentRequest = ({ existingRequest }) => {
     const [loading, setLoading] = useState(false);
     const [acceptedLog, setAcceptedLog] = useState([]);
     const [filteredLog, setFilteredLog] = useState([]);
-    const[chatOpen,setChatOpen]=useState(false);
-    const {user} =useAuth();
+    const [chatOpen, setChatOpen] = useState(false);
+    const [openReview, setOpenReview] = useState(false);
+    const [review, setReview] = useState("");
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchAcceptedLogs = async () => {
@@ -62,26 +67,28 @@ const CurrentRequest = ({ existingRequest }) => {
 
     const handleLogStatus = async (logId, newStatus) => {
         try {
-          const response = await fetch(`http://localhost:5000/api/updateMatchLog/${logId}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ status: newStatus }),
-          });
-    
-          if (!response.ok) {
-            throw new Error('Failed to update status');
-          }
-    
-          toast.success(`Status updated to '${newStatus}'`);
-          setTimeout(() => window.location.reload(), 1500)
+            const response = await fetch(`http://localhost:5000/api/updateMatchLog/${logId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update status');
+            }
+
+            toast.success(`Status updated to '${newStatus}'`);
+            setTimeout(() => window.location.reload(), 1500)
         } catch (err) {
-          console.error('Status update failed:', err);
-          toast.error(`Failed to Update Status'`);
+            console.error('Status update failed:', err);
+            toast.error(`Failed to Update Status'`);
         }
-      };
+    };
+
+    
 
     return (
         <main>
@@ -197,7 +204,7 @@ const CurrentRequest = ({ existingRequest }) => {
                                     <MapPin className="h-4 w-4 mr-1" />
                                     {log.distance} km away.
                                 </p>
-                                
+
                                 <p>
                                     <span className="font-medium text-gray-700">Location:</span>{' '}
                                     {log.address}
@@ -212,16 +219,22 @@ const CurrentRequest = ({ existingRequest }) => {
                                 </div>
                             </div>
 
-                            <div className="actions mt-4">                              
-                                    <div className="grid grid-cols-1 gap-2 font-bold">
-                                        <button onClick={()=>{setChatOpen(true)}} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
-                                            Start a Conversation
-                                        </button>
-                                        {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={log.donorId} name={log.fullName} requestId={existingRequest._id}/>}
-                                        <button onClick={() => handleLogStatus(log._id, 'declined')} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
-                                            Decline
-                                        </button>
-                                    </div>
+                            <div className="actions mt-4">
+                                <div className="grid grid-cols-1 gap-2 font-bold">
+                                    <button onClick={() => { setChatOpen(true) }} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                                        Start a Conversation
+                                    </button>
+                                    {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={log.donorId} name={log.fullName} requestId={existingRequest._id} />}
+                                    <button onClick={() => handleLogStatus(log._id, 'declined')} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
+                                        Decline
+                                    </button>
+                                    <button onClick={() => setOpenReview(true)} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
+                                        Donation Completed
+                                    </button>
+                                    {openReview && <Review openReview={openReview} setOpenReview={setOpenReview} logId={log._id} donor={log.donorId} recipient={user._id} name={log.fullName}/>
+
+                                    }
+                                </div>
                             </div>
 
                         </div>

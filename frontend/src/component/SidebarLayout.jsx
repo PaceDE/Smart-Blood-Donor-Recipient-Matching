@@ -2,8 +2,75 @@ import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import addNotification from 'react-push-notification';
+import { useSocket } from './SocketContext';
+import { useAuth } from './AuthContext';
 
 function SidebarLayout() {
+  const { messages,setMessages } = useSocket();
+  const { user } = useAuth();
+  useEffect(() => {
+
+    const unnotifiedMessages = messages.filter(
+      (msg) =>
+
+        msg.recipient === user._id &&
+        msg.notificationStatus == "notsent"
+    );
+
+    if (unnotifiedMessages.length === 0) return;
+
+    
+      for (const msg of unnotifiedMessages) {
+        addNotification({
+          title: `New Message received from ${msg.senderName}`,
+          message: `Message: ${msg.content}`,
+          native: true,
+          duration: 60000,
+          onClick: () => {
+            window.focus();
+            window.location.href = '/home';
+          },
+        });
+
+      }
+    
+
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg.recipient === user._id &&
+          msg.notificationStatus !== "sent"
+          ? { ...msg, notificationStatus: "sent" }
+          : msg
+      )
+    );
+    const NotificationUpdate = async () => {
+      const messageInfo = {
+        recipient: user._id,
+      }
+      try {
+        const res = await fetch("http://localhost:5000/api/messageNotification", {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(messageInfo)
+        });
+        if (!res.ok) {
+          throw new Error('Failed to mark as sent');
+        }
+
+      }
+      catch (err) {
+        console.error(err);
+      }
+
+    }
+
+
+    NotificationUpdate();
+
+  }, [messages])
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -24,7 +91,7 @@ function SidebarLayout() {
                 window.location.href = '/home/donate';
               },
             });
-           
+
 
             // Mark notification as sent on backend
             await fetch(`http://localhost:5000/api/markNotification/${log._id}`, {
@@ -34,7 +101,7 @@ function SidebarLayout() {
             });
 
           }
-          
+
 
         }
 

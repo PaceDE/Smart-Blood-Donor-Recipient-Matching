@@ -1,15 +1,21 @@
-import React, { useState,useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router";
 import { useSocket } from "./SocketContext";
 import { XCircle, Send } from "lucide-react";
 import '../App.css';
 import Loading from "./Loading";
 import { useAuth } from "./AuthContext";
+import { toast } from "react-toastify";
 
 const Chat = ({ chatOpen, setChatOpen, sendFrom, sendTo, name, requestId }) => {
-   const [typedMessage, setTypedMessage] = useState("");
-    const { socket, messages, messageLoading } = useSocket();
+    const location = useLocation();
+    const currentPath = location.pathname;
+    const [typedMessage, setTypedMessage] = useState("");
+    const { socket, messages, setMessages, messageLoading } = useSocket();
     const { user } = useAuth();
     const scrollRef = useRef(null);
+    const recipientRole = currentPath.includes("request") ? "donor" : "requester";
+    console.log(recipientRole);
 
     const chatMessages = messages?.filter(
         (msg) =>
@@ -17,6 +23,61 @@ const Chat = ({ chatOpen, setChatOpen, sendFrom, sendTo, name, requestId }) => {
                 (msg.sender === sendTo && msg.recipient === sendFrom)) &&
             msg.requestId === requestId
     ) || [];
+
+
+    useEffect(() => {
+
+        const unreadMessages = messages.filter(
+            (msg) =>
+                msg.requestId === requestId &&
+                msg.recipient === user._id &&
+                msg.status === "sent"
+        );
+
+        if (unreadMessages.length === 0) return; 
+
+        
+        setMessages((prevMessages) =>
+            prevMessages.map((msg) =>
+                msg.requestId === requestId &&
+                    msg.recipient === user._id &&
+                    msg.status !== "read"
+                    ? { ...msg, status: "read" }
+                    : msg
+            )
+        );
+        const readMessage = async () => {
+
+           
+                const messageInfo = {
+                    recipient: user._id,
+                    requestId: requestId
+                }
+                try {
+                    const res = await fetch("http://localhost:5000/api/messageRead", {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(messageInfo)
+                    });
+                    if (!res.ok) {
+                        throw new Error('Failed to mark as read');
+                    }
+
+                }
+                catch (err) {
+                    console.error(err);
+                }
+
+            }
+
+        
+        readMessage();
+
+
+    }, [messages])
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -31,9 +92,9 @@ const Chat = ({ chatOpen, setChatOpen, sendFrom, sendTo, name, requestId }) => {
         const messageToSend = {
             sender: sendFrom,
             recipient: sendTo,
+            recipientRole: recipientRole,
             requestId: requestId,
             content: typedMessage.trim(),
-
         };
 
         socket.current.send(JSON.stringify({
@@ -45,7 +106,7 @@ const Chat = ({ chatOpen, setChatOpen, sendFrom, sendTo, name, requestId }) => {
         setTypedMessage("");
     };
 
-     if (messageLoading)
+    if (messageLoading)
         return <Loading loadingText="Loading Chat history..." />
 
 
