@@ -1,14 +1,13 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import Loading from "./Loading";
 
 const PrivateRoute = ({ children }) => {
   const { isLoggedIn, user, isLoading } = useAuth();
 
-  if(isLoading)
-  {
-    return <div>Loading..</div>;
-
+  if(isLoading){
+    return( <Loading loadingText="Fetching User data..." />)
   }
  
   if (!isLoggedIn) {

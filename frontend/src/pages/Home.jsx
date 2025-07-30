@@ -4,6 +4,7 @@ import { useAppTracking } from '../component/AppTrackingContext';
 import TopBar from '../component/TopBar';
 import { Users, Droplets, Heart, TrendingUp } from "lucide-react";
 import DoughnutChart from '../component/DoughnutChart';
+import Loading from '../component/Loading';
 
 const checkEligibility = (user,healthInfo) => {
     if (!user || !healthInfo) return false;
@@ -54,7 +55,7 @@ export default function Home() {
   const eligible = checkEligibility(user,healthInfo);
 
   if (loading || isLoading)
-    return <p>Loading...</p>
+    return( <Loading loadingText="Please wait while we fetch data..." />)
   return (
     <div className="flex flex-col">
       <TopBar heading={"BloodLink Dashboard"} text={`Welcome back, manage your donations and requests ${user.fullName}`} />

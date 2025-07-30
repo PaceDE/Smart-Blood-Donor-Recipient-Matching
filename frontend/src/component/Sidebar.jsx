@@ -1,6 +1,6 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../assets/bloodlink-logo.svg';
-import { Link, useLocation, useNavigate} from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from './AuthContext';
 import { useSocket } from './SocketContext';
@@ -8,35 +8,73 @@ import {
   faHandHoldingDroplet,
   faTruckDroplet,
   faHome,
-  faUser,
   faCircleQuestion,
   faBars,
   faXmark,
-  faRightFromBracket
+ 
 } from '@fortawesome/free-solid-svg-icons';
-import { Droplets } from 'lucide-react';
+import { faComment } from '@fortawesome/free-regular-svg-icons';
 
 const menuItems = [
   { path: '/home/request', label: 'Request', icon: faHandHoldingDroplet },
   { path: '/home/donate', label: 'Donate', icon: faTruckDroplet },
   { path: '/home', label: 'Home', icon: faHome },
-  { path: '/home/profile', label: 'Profile', icon: faUser },
-  { path: '/home/about', label: 'About Us', icon: faCircleQuestion }
+  { path: '/home/reviews', label: 'Reviews', icon: faComment },
 ];
 import OneSignal from 'react-onesignal';
 
-const Sidebar = () => {
+const Sidebar = ({ donateSectionUnread,setDonateSectionUnread, requestSectionUnread , setRequestSectionUnread }) => {
   const location = useLocation();
   const { logout, user } = useAuth();
   const { socket, messages, messageLoading } = useSocket();
   const [donateSectionMsg, setDonateSectionMsg] = useState(0);
   const [requestSectionMsg, setRequestSectionMsg] = useState(0);
+  
+  useEffect(() => {
+  let page;
+  if (location.pathname.includes("request")) page = "request";
+  else if (location.pathname.includes("donate")) page = "donate";
+  console.log("Page: ",page)
+
+  const markLogRead = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/markLogRead/${page}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to mark as read');
+      }
+
+      // Reset unread counts
+      if (page === "donate") {
+        setDonateSectionUnread(0);
+      } 
+      else if (page === "request") {
+        setRequestSectionUnread(0);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if ((page === "donate" || page === "request") && (donateSectionUnread>0 || requestSectionUnread>0)) {
+    markLogRead();
+  }
+
+}, [location.pathname]);
+
   useEffect(() => {
     let donateCount = 0;
     let requestCount = 0;
 
     for (const msg of messages) {
-      console.log("role"+msg.recipientRole+"status:"+msg.status)
+
       if (msg.recipient === user._id && msg.status === "sent") {
         if (msg.recipientRole === "donor") {
           donateCount++;
@@ -50,8 +88,6 @@ const Sidebar = () => {
     setRequestSectionMsg(requestCount);
   }, [messages, user._id]);
   const navigate = useNavigate();
-  console.log("Donate:"+donateSectionMsg);
-  console.log("Request:"+requestSectionMsg);
 
   const handleLogout = async () => {
     await logout();
@@ -105,9 +141,21 @@ const Sidebar = () => {
                           {requestSectionMsg}
                         </span>
                       )}
+                       {index === 0 && requestSectionUnread > 0 && (
+                        <span className="absolute top-1 left-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                          {requestSectionUnread}
+                        </span>
+                      )}
+
+
                       {index === 1 && donateSectionMsg > 0 && (
                         <span className="absolute top-1 right-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
                           {donateSectionMsg}
+                        </span>
+                      )}
+                      {index === 1 && donateSectionUnread > 0 && (
+                        <span className="absolute top-1 left-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                          {donateSectionUnread}
                         </span>
                       )}
 

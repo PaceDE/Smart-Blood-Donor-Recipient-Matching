@@ -5,6 +5,17 @@ import { vincenty,isEligibleDonor,predict } from "../utils/algorithm.js";
 import MatchingLog from "../models/matchinglog.js";
 import Message from "../models/message.js";
 
+const bloodCompatibility = {
+    "A+": ["A+", "A-", "O+", "O-"],
+    "A-": ["A-", "O-"],
+    "B+": ["B+", "B-", "O+", "O-"],
+    "B-": ["B-", "O-"],
+    "AB+": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    "AB-": ["A-", "B-", "AB-", "O-"],
+    "O+": ["O+", "O-"],
+    "O-": ["O-"]
+};
+
 
 const currentRequest = async (req, res) => {
     const request = await RequestInfo.findOne({
@@ -26,12 +37,13 @@ const createRequest = async (req, res) => {
         
         const bloodType = requestInfo.bloodType;
         const requesterId = req.user._id;
+        const compatibleTypes = bloodCompatibility[bloodType];
 
 
         const matched = await HealthInfo.find().populate({
             path: 'user',
             match: {
-                bloodType: bloodType,
+                bloodType: {$in : compatibleTypes},
                 _id: { $ne: requesterId }
             },
             select: '-password'
@@ -69,6 +81,7 @@ const createRequest = async (req, res) => {
             const log = new MatchingLog({
                 request: request._id,
                 donor: entry.donor.user._id,
+                donorBloodType: entry.donor.user.bloodType,
                 distance: entry.distance,
         
             });
@@ -98,13 +111,11 @@ const updateRequest = async (req, res) => {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Update the request status
     request.status = status;
     await request.save();
-
-    // Matching Log will be expired
+   
     await MatchingLog.updateMany(
-      { request: requestId },
+      { request: requestId, status :{$ne : 'donated'} },
       { $set: { status: 'expired' } }
     );
 

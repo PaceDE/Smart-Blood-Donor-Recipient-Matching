@@ -64,6 +64,7 @@ const Donate = () => {
     } catch (err) {
       console.error('Status update failed:', err);
       toast.error(`Failed to Update Status'`);
+      setTimeout(() => window.location.reload(), 1500)
     }
   };
 
@@ -77,6 +78,9 @@ const Donate = () => {
       setFilteredLog(matchedLog.filter(log => log.urgency.toLowerCase() === selected.toLowerCase()));
     
   };
+
+  if(isLoading)
+    return( <Loading loadingText="Fetching user..." />)
 
 
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import addNotification from 'react-push-notification';
@@ -6,7 +6,9 @@ import { useSocket } from './SocketContext';
 import { useAuth } from './AuthContext';
 
 function SidebarLayout() {
-  const { messages,setMessages } = useSocket();
+  const { messages, setMessages } = useSocket();
+  const[donateSectionUnread,setDonateSectionUnread] =useState(0);
+  const[requestSectionUnread,setRequestSectionUnread] =useState(0);
   const { user } = useAuth();
   useEffect(() => {
 
@@ -19,21 +21,21 @@ function SidebarLayout() {
 
     if (unnotifiedMessages.length === 0) return;
 
-    
-      for (const msg of unnotifiedMessages) {
-        addNotification({
-          title: `New Message received from ${msg.senderName}`,
-          message: `Message: ${msg.content}`,
-          native: true,
-          duration: 60000,
-          onClick: () => {
-            window.focus();
-            window.location.href = '/home';
-          },
-        });
 
-      }
-    
+    for (const msg of unnotifiedMessages) {
+      addNotification({
+        title: `New Message received from ${msg.senderName}`,
+        message: `Message: ${msg.content}`,
+        native: true,
+        duration: 60000,
+        onClick: () => {
+          window.focus();
+          window.location.href = '/home';
+        },
+      });
+
+    }
+
 
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
@@ -71,6 +73,7 @@ function SidebarLayout() {
     NotificationUpdate();
 
   }, [messages])
+
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -78,7 +81,17 @@ function SidebarLayout() {
         if (!res.ok) return;
 
 
-        const pendingLogs = await res.json();
+        const data = await res.json();
+       
+
+
+        const pendingLogs = data.pendingLogs;
+        const unreadCount = data.unreadCount;
+        const requestUnreadCount = data.requestUnreadCount;
+        const requestPendingLogs = data.requestPendingLogs;
+        setDonateSectionUnread(unreadCount);
+        setRequestSectionUnread(requestUnreadCount);
+        
         if (pendingLogs) {
           for (const log of pendingLogs) {
             addNotification({
@@ -91,31 +104,50 @@ function SidebarLayout() {
                 window.location.href = '/home/donate';
               },
             });
+          
 
 
             // Mark notification as sent on backend
             await fetch(`http://localhost:5000/api/markNotification/${log._id}`, {
-              method: 'POST',
+              method: 'PUT',
               credentials: 'include',
               headers: { 'Content-Type': 'application/json' },
             });
-
           }
+        }
 
-
+        if (requestPendingLogs) {
+          for (const log of requestPendingLogs) {
+            addNotification({
+              title: 'Notification from BloodLink - Blood Request Accepted',
+              message: `Someone from ${log.distance} km away accepted your Blood Request.`,
+              native: true,
+              duration: 60000,
+              onClick: () => {
+                window.focus();
+                window.location.href = '/home/request';
+              },
+            });
+          
+            await fetch(`http://localhost:5000/api/markNotification/${log._id}`, {
+              method: 'PUT',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
         }
 
       } catch (error) {
         console.error('Notification polling error:', error);
       }
-    }, 60000); // poll every 60 seconds
+    }, 15000); // poll every 60 seconds
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
+      <Sidebar donateSectionUnread={donateSectionUnread} setDonateSectionUnread={setDonateSectionUnread} requestSectionUnread={requestSectionUnread} setRequestSectionUnread={setRequestSectionUnread}/>
       <main className="flex-1 overflow-y-auto bg-[#f9fafb]">
         <Outlet />
       </main>

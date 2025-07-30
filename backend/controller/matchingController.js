@@ -13,36 +13,6 @@ const getVincenty = (req, res) => {
     res.json({ distanceInMeters });
 };
 
-const pendingNotifications = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const pendingLogs = await MatchingLog.find({ donor: userId, notification_sent: false, status: 'active' });
-
-        res.json(pendingLogs);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
-    }
-}
-
-const markNotification = async (req, res) => {
-    try {
-        const id = req.params.id;
-
-        const log = await MatchingLog.findById(id);
-        if (!log) {
-            return res.status(404).json({ message: "Matching log not found" });
-        }
-
-        log.notification_sent = true;
-        await log.save();
-
-        res.json({ message: "Notification marked as sent" });
-    } catch (err) {
-        console.error("Error marking notification:", err);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
 
 const matchedLog = async (req, res) => {
     try {
@@ -70,13 +40,13 @@ const matchedLog = async (req, res) => {
                 status: log.status,
                 distance: log.distance,
                 requestId: log.request._id,
-                
+
                 bloodType: log.request.bloodType,
                 urgency: log.request.urgency,
                 hospital: log.request.hospital,
                 address: log.request.address,
                 description: log.request.description,
-                userId:log.request.requester._id,
+                userId: log.request.requester._id,
                 fullName: log.request.requester.fullName,
                 phone: log.request.requester.phone,
                 email: log.request.requester.email,
@@ -95,21 +65,28 @@ const updateMatchLog = async (req, res) => {
         const { status } = req.body;
 
         // Validate input
-        const validStatuses = ['active','accepted', 'declined', 'donated', 'expired'];
+        const validStatuses = ['active', 'accepted', 'declined', 'donated', 'expired'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ error: 'Invalid status value' });
         }
 
         // Find and update the MatchingLog
-        const updatedLog = await MatchingLog.findByIdAndUpdate(
-            id,
-            { status },
-            { new: true }
+        const toUpdateLog = await MatchingLog.findById(
+            id
         );
-
-        if (!updatedLog) {
+        const requestInfo = await RequestInfo.findById(toUpdateLog.request);
+        if(requestInfo.status=='pending'){
+            toUpdateLog.status=status;
+        }
+            
+        if (!toUpdateLog) {
             return res.status(404).json({ error: 'Matching log not found' });
         }
+        if (status == 'accepted') {
+            toUpdateLog.notification_sent = false;
+            toUpdateLog.read = false;
+        }
+        await toUpdateLog.save();
 
         res.status(200).json({ message: 'Status updated successfully' });
     } catch (err) {
@@ -141,6 +118,7 @@ const acceptedLog = async (req, res) => {
                 distance: log.distance,
                 donorId: log.donor._id,
                 fullName: log.donor.fullName,
+                donorBloodType: log.donorBloodType,
                 phone: log.donor.phone,
                 email: log.donor.email,
                 address: log.donor.address,
@@ -156,4 +134,68 @@ const acceptedLog = async (req, res) => {
     }
 };
 
-export { getVincenty, pendingNotifications, markNotification, matchedLog, updateMatchLog, acceptedLog };
+const pendingNotifications = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const pendingLogs = await MatchingLog.find({ donor: userId, notification_sent: false, status: 'active' });
+        const unreadCount = await MatchingLog.countDocuments({ donor: userId, read: false, status: 'active' });
+
+        const requestInfo = await RequestInfo.findOne({ requester: userId, status:"pending" });
+        let requestPendingLogs,requestUnreadCount;
+        if(requestInfo)
+        {
+            requestPendingLogs=await MatchingLog.find({ request: requestInfo._id, notification_sent: false, status: 'accepted' });
+            requestUnreadCount =await MatchingLog.countDocuments({ request: requestInfo._id, read: false, status: 'accepted' });
+        }
+
+        res.json({ pendingLogs, unreadCount,requestPendingLogs,requestUnreadCount });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+const markNotification = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const log = await MatchingLog.findById(id);
+        if (!log) {
+            return res.status(404).json({ message: "Matching log not found" });
+        }
+
+        log.notification_sent = true;
+        await log.save();
+
+        res.json({ message: "Notification marked as sent" });
+    } catch (err) {
+        console.error("Error marking notification:", err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const markLogRead = async (req, res) => {
+    try {
+        console.log("hahah")
+        const id = req.user._id;
+        const section = req.params.identifier;
+        let log
+        if (section == "donate") {
+            log = await MatchingLog.updateMany({ donor: id, status: "active", read: false }, { read: true })
+        }
+        else if(section=="request") {
+            const requestInfo = await RequestInfo.findOne({ requester: id, status:"pending" });
+            if(requestInfo){
+                log = await MatchingLog.updateMany({ request: requestInfo._id, status: "accepted", read: false }, { read: true })
+            }
+        }
+
+        res.json({ message: "Log marked as Read" });
+    } catch (err) {
+        console.error("Error marking Log:", err);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+
+export { getVincenty, pendingNotifications, markNotification, matchedLog, updateMatchLog, acceptedLog, markLogRead };

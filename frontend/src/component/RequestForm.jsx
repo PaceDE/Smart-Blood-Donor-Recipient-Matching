@@ -63,7 +63,7 @@ const RequestForm = () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                credentials: "include", // sends cookies (for JWT/session auth)
+                credentials: "include", 
                 body: JSON.stringify({ requestInfo }),
             });
             const data = await res.json()

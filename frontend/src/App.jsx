@@ -16,6 +16,7 @@ import { ToastContainer } from 'react-toastify';
 import PrivateRoute from './component/PrivateRoute';
 import { AppTrackingProvider } from './component/AppTrackingContext';
 import { SocketProvider } from './component/SocketContext';
+import Reviews from './pages/Reviews';
 
 
 function App() {
@@ -34,20 +35,16 @@ function App() {
 
               </Route>
 
-
-              {/* Private Routes with Sidebar */}
               <Route path="/home" element={<PrivateRoute>
                 <SidebarLayout />
               </PrivateRoute>
               }>
-
                 <Route index path="" element={<Home />} />
                 <Route path="request" element={<Request />} />
                 <Route path="donate" element={<Donate />} />
+                <Route path="reviews" element={<Reviews />} />
                 <Route path="about" element={<AboutUs />} />
                 <Route path="profile" element={<Profile />} />
-
-
               </Route>
             </Routes>
             <ToastContainer position="top-right" autoClose={3000} />

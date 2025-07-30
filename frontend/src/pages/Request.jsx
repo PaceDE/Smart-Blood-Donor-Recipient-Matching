@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TopBar from '../component/TopBar';
 import RequestForm from '../component/RequestForm';
 import CurrentRequest from '../component/CurrentRequest';
+import Loading from '../component/Loading';
 
 const Request = () => {
   const [existingRequest, setExistingRequest] = useState(null);
@@ -37,7 +38,7 @@ const Request = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return( <Loading loadingText="Please wait while we fetch data..." />)
   }
 
   return (

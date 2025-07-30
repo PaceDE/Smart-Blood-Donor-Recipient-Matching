@@ -47,8 +47,7 @@ const messageNotification = async (req, res) => {
 
         const result = await Message.updateMany(
             {
-                recipient: recipient,
-                
+                recipient: recipient,      
                 notificationStatus: { $ne: "sent" } 
             },
             {

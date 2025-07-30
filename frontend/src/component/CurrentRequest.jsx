@@ -200,6 +200,10 @@ const CurrentRequest = ({ existingRequest }) => {
                             </div>
 
                             <div className="space-y-2 text-sm leading-relaxed">
+                                <p>
+                                    <span className="font-medium text-gray-700">Donor Blood Type:</span>{' '}
+                                    <span className="font-bold text-red-600">{log.donorBloodType}</span>
+                                </p>
                                 <p className="text-gray-600 text-sm flex items-center">
                                     <MapPin className="h-4 w-4 mr-1" />
                                     {log.distance} km away.

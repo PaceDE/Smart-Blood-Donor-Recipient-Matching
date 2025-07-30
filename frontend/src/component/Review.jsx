@@ -12,22 +12,23 @@ const Review = ({ openReview, setOpenReview, logId, donor, recipient, name }) =>
             review,
         }
         try {
-
-            const res = await fetch("http://localhost:5000/api/donationCompleted", {
+            const res = await fetch("http://localhost:5000/api/donationRecorded", {
                 method: 'POST',
                 credentials: 'include',
+                headers: {
+                    'Content-Type' : 'application/json',
+                },
                 body : JSON.stringify(donationData)
             });
             if (!res.ok) {
-                throw new Error('Failed to cancel request');
+                throw new Error('Failed to record Donation');
             }
-            toast.success('Request cancelled successfully!');
+            toast.success('Donation recorded successfully!');
             setTimeout(() => { window.location.reload() }, 1500);
         }
         catch (err) {
             console.error(err);
-            toast.error('Failed to update');
-
+            toast.error('Failed to record donation');
         }
 
 

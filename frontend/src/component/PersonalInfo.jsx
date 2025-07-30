@@ -17,6 +17,7 @@ import SuccessToast from './SuccessToast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
+import Loading from './Loading';
 
 
 const PersonalInfo = () => {
@@ -76,7 +77,7 @@ const PersonalInfo = () => {
 
   
   if (!user) {
-    return <div className="text-center text-gray-600">Loading...</div>;
+    return( <Loading loadingText="Please wait while we fetch data..." />)
   }
 
     const handleCancel = (e) => {

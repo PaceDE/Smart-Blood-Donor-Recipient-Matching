@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, createContext,useState} from "react";
 import { useAuth } from './AuthContext';
+import { toast } from "react-toastify";
 
 const SocketContext = createContext();
 
@@ -56,6 +57,11 @@ export const SocketProvider = ({ children }) => {
                     const updated= alreadyExists? prev : [...prev,newMsg];
                     return updated.sort((a,b)=>new Date(a.sentAt)- new Date(b.sentAt));
                 });
+            }
+            if (msg.type === "error") {
+                const newMsg =msg.data;
+                toast.error(newMsg.message)
+                setTimeout(()=>{window.location.reload()},1500);
             }
         };
 

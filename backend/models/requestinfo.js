@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const RequestInfoSchema = new mongoose.Schema({
-  requester: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // who requested blood
+  requester: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true,index:true }, 
   bloodType: {
     type: String,
     enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
@@ -18,7 +18,8 @@ const RequestInfoSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['pending', 'completed', 'canceled'],
-    default: 'pending'
+    default: 'pending',
+    index:true
   },
 }, { timestamps: true });
 

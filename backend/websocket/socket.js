@@ -2,6 +2,8 @@ import { WebSocketServer } from "ws";
 import url from "url";
 import Message from "../models/message.js";
 import User from "../models/users.js";
+import RequestInfo from "../models/requestinfo.js";
+import MatchingLog from "../models/matchinglog.js";
 
 function setupWebSocket(server) {
   const wss = new WebSocketServer({ server, path: "/ws" });
@@ -26,28 +28,56 @@ function setupWebSocket(server) {
     ws.on("message", async (msg) => {
       const messageData = JSON.parse(msg);
       if (messageData.type === "send_message") {
-        const { sender, recipient, recipientRole,content, requestId } = messageData.data;
-        
+        const { sender, recipient, recipientRole, content, requestId } = messageData.data;
+        const request = await RequestInfo.findById(requestId);
+        const matchlog = await MatchingLog.find({ request: requestId })
+
+        const currentLog = matchlog.filter((c) => c.donor.toString() == sender.toString())[0];
+        const isSenderDonor = recipientRole === "requester";
+        if (isSenderDonor) {
+          if (!request || request.status !== "pending" || currentLog.status != "accepted") {
+            const errorPayload = {
+              type: "error",
+              data: {
+                message: "Cannot send message. This request is not pending. or Current Log is not accepted",
+              },
+            };
+
+            const senderSockets = clients.get(sender);
+            if (senderSockets) {
+              for (const sock of senderSockets) {
+                if (sock.readyState === sock.OPEN) {
+                  sock.send(JSON.stringify(errorPayload));
+                }
+              }
+            }
+
+            return;
+          }
+
+        }
+
+
         const senderData = await User.findById(sender).select('fullName');
 
         const savedMessage = await new Message({
           sender,
           recipient,
-          senderName:senderData.fullName,
+          senderName: senderData.fullName,
           recipientRole,
           content,
           requestId,
         });
         await savedMessage.save();
 
-        
+
 
         const payload = {
           type: "receive_message",
           data: {
             _id: savedMessage._id,
             sender,
-            senderName:savedMessage.senderName,
+            senderName: savedMessage.senderName,
             recipient,
             recipientRole,
             requestId,
@@ -92,5 +122,6 @@ function setupWebSocket(server) {
     });
   });
 }
+
 
 export { setupWebSocket };
