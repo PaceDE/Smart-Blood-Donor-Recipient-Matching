@@ -21,7 +21,6 @@ const menuItems = [
   { path: '/home', label: 'Home', icon: faHome },
   { path: '/home/reviews', label: 'Reviews', icon: faComment },
 ];
-import OneSignal from 'react-onesignal';
 
 const Sidebar = ({ donateSectionUnread,setDonateSectionUnread, requestSectionUnread , setRequestSectionUnread }) => {
   const location = useLocation();
@@ -89,11 +88,6 @@ const Sidebar = ({ donateSectionUnread,setDonateSectionUnread, requestSectionUnr
   }, [messages, user._id]);
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    await OneSignal.removeExternalUserId();
-    navigate("/");
-  };
 
   return (
     <>

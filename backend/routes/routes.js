@@ -8,6 +8,7 @@ import { getVincenty,pendingNotifications,markNotification,matchedLog,updateMatc
 import { createRequest,updateRequest } from "../controller/requestController.js";
 import { getMessages,messageRead,messageNotification } from "../controller/messageController.js";
 import { donationRecorded } from "../controller/donationController.js";
+import { getAllRequests, getAllUsers } from "../controller/adminController.js";
 
 router.post("/register", register);
 router.get('/auth-check',verifyToken, fetchUser);
@@ -38,5 +39,10 @@ router.put('/markLogRead/:identifier',verifyToken,markLogRead)
 
 router.post('/donationRecorded',verifyToken,donationRecorded);
 
+// Admin Routes
+router.get('/getallusers',verifyToken,getAllUsers);
+
+router.get('/getallrequests',verifyToken,getAllRequests);
 
 export { router };
+

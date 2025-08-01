@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import Loading from "./Loading";
 
-const PrivateRoute = ({ requiredRole, children }) => {
+const AdminRoute = ({ children }) => {
   const { isLoggedIn, user, isLoading } = useAuth();
 
   if(isLoading){
@@ -13,13 +13,12 @@ const PrivateRoute = ({ requiredRole, children }) => {
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
-
   
-  if (user?.role !== requiredRole) {
+  if (user?.role !== "admin") {
     return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
 };
 
-export default PrivateRoute;
+export default AdminRoute;

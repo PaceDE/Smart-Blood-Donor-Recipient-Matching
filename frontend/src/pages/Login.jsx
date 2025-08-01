@@ -60,7 +60,7 @@ function Login() {
         
         if(data.user.role==="admin")
         {
-          navigate("/admin");
+          navigate("/admin/dashboard");
           return;
         }
         navigate("/home");
