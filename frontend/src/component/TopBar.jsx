@@ -11,7 +11,7 @@ import { useAuth } from './AuthContext';
 const TopBar = ({ heading, text }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
-
+                                  
   const handleLogout = async () => {
     await logout();
     navigate("/");

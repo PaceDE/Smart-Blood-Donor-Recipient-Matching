@@ -6,6 +6,7 @@ const DonationHistorySchema = new mongoose.Schema({
   recipient :{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   review :{type:String},
   request: { type: mongoose.Schema.Types.ObjectId, ref: 'RequestInfo', required: true },
+  log: { type: mongoose.Schema.Types.ObjectId, ref: 'MatchingLog', required: true },
   donatedAt: { type: Date, default: Date.now },
 },{ timestamps: true });
 

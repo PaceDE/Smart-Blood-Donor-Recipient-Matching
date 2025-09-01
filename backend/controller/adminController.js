@@ -1,5 +1,7 @@
 import User from "../models/users.js";
 import RequestInfo from "../models/requestinfo.js";
+import MatchingLog from "../models/matchinglog.js";
+import DonationHistory from "../models/donationhistory.js";
 
 const getAllUsers = async (req, res) => {
   try {
@@ -12,7 +14,7 @@ const getAllUsers = async (req, res) => {
 };
 
 
-export const getAllRequests = async (req, res) => {
+const getAllRequests = async (req, res) => {
   try {
     const requests = await RequestInfo.find()
       .populate({
@@ -27,6 +29,59 @@ export const getAllRequests = async (req, res) => {
   }
 };
 
+const getAllMatchLog = async (req, res) => {
+  try {
+    const matchinglog = await MatchingLog.find()
+      .populate({
+        path:"request",
+        select:"requester bloodType",
+        populate:{
+          path:"requester",
+          select:"-password"
+        }
+      }) 
+      .populate({
+        path:"donor",
+        select:"-password"  
+      })
+
+      .sort({ createdAt: -1 }); 
+    res.status(200).json(matchinglog);
+  } catch (err) {
+    console.error("Error fetching matchinglog:", err);
+    res.status(500).json({ message: "Failed to fetch matchinglog", error: err.message });
+  }
+};
+
+const getAllDonationHistory = async (req, res) => {
+  try {
+    const donationhistory = await DonationHistory.find()
+      .populate({
+        path:"donor",
+        select:"-password"
+        
+        
+      }) 
+      .populate({
+        path:"recipient",
+        select:"-password"
+      })
+      .populate({
+        path:"request",
+        select:"bloodType"
+      })
+      .populate({
+        path:"matchinglog",
+       
+      })
+
+      .sort({ createdAt: -1 }); 
+    res.status(200).json(donationhistory);
+  } catch (err) {
+    console.error("Error fetching donationhistory:", err);
+    res.status(500).json({ message: "Failed to fetch donationhistory", error: err.message });
+  }
+};
 
 
-export {getAllUsers};
+export {getAllUsers,getAllRequests,getAllMatchLog,getAllDonationHistory};

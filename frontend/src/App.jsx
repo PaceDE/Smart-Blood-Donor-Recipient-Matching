@@ -23,6 +23,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import UserManagement from "./pages/UserManagement";
 import RequestManagement from "./pages/RequestManagement";
+import MatchLogManagement from "./pages/MatchLogManagement";
+import DonationManagement from "./pages/DonationManagement";
 
 function App() {
   return (
@@ -64,8 +66,9 @@ function App() {
               >
                 <Route index path="dashboard" element={<AdminDashboard />} />
                 <Route path="usermanagement" element={<UserManagement />} /> 
-                <Route path="requestmanagement" element={<RequestManagement />} /> 
-
+                <Route path="requestmanagement" element={<RequestManagement />} />
+                <Route path="matchlogmanagement" element={<MatchLogManagement />} />  
+                <Route path="donationmanagement" element={<DonationManagement />} />  
               </Route>
 
               <Route path="/unauthorized" element={<Unauthorized />} />

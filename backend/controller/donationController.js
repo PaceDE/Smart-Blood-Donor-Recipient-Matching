@@ -14,6 +14,7 @@ const donationRecorded = async (req, res) => {
             recipient,
             review,
             request: log.request,
+            log:logId
         })
         await newDonation.save();
         await Message.deleteMany({

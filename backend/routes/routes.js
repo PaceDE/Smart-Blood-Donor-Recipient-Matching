@@ -8,7 +8,7 @@ import { getVincenty,pendingNotifications,markNotification,matchedLog,updateMatc
 import { createRequest,updateRequest } from "../controller/requestController.js";
 import { getMessages,messageRead,messageNotification } from "../controller/messageController.js";
 import { donationRecorded } from "../controller/donationController.js";
-import { getAllRequests, getAllUsers } from "../controller/adminController.js";
+import { getAllRequests, getAllUsers,getAllMatchLog, getAllDonationHistory } from "../controller/adminController.js";
 
 router.post("/register", register);
 router.get('/auth-check',verifyToken, fetchUser);
@@ -44,5 +44,8 @@ router.get('/getallusers',verifyToken,getAllUsers);
 
 router.get('/getallrequests',verifyToken,getAllRequests);
 
+router.get('/getallmatchlog',verifyToken,getAllMatchLog);
+
+router.get('/getalldonationhistory',verifyToken,getAllDonationHistory);
 export { router };
 
