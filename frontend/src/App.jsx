@@ -26,7 +26,7 @@ import RequestManagement from "./pages/RequestManagement";
 import MatchLogManagement from "./pages/MatchLogManagement";
 import DonationManagement from "./pages/DonationManagement";
 import UserDetail from "./pages/admin/UserDetail";
-
+import MatchingDetail from "./pages/admin/MatchingDetail";
 function App() {
   return (
     <AppTrackingProvider>
@@ -70,7 +70,8 @@ function App() {
                 <Route path="requestmanagement" element={<RequestManagement />} />
                 <Route path="matchlogmanagement" element={<MatchLogManagement />} />  
                 <Route path="donationmanagement" element={<DonationManagement />} /> 
-                <Route path="userdetail" element={<UserDetail />} />   
+                <Route path="userdetail" element={<UserDetail />} /> 
+                <Route path="matchinglogdetail" element={<MatchingDetail />} />   
               </Route>
 
               <Route path="/unauthorized" element={<Unauthorized />} />

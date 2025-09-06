@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../component/Loading";
 import TopBar from "../component/TopBar";
-
+import { Link } from "react-router";
 const MatchLogManagement = () => {
   const [matchlog, setMatchLog] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,13 +10,16 @@ const MatchLogManagement = () => {
   useEffect(() => {
     const fetchMatchLogs = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/getallmatchlog", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/getallmatchlog",
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) throw new Error("Failed to fetch users");
         const data = await response.json();
         setMatchLog(data);
@@ -57,6 +60,7 @@ const MatchLogManagement = () => {
                   <th className="px-4 py-3">Matched Blood Type </th>
                   <th className="px-4 py-3">Distance</th>
                   <th className="px-4 py-3">Matched At</th>
+                  <th className="px-4 py-3">Detail</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -66,12 +70,25 @@ const MatchLogManagement = () => {
                     className="border-t hover:bg-red-50 transition"
                   >
                     <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2">{log.request.requester.fullName}</td>
+                    <td className="px-4 py-2">
+                      {log.request.requester.fullName}
+                    </td>
                     <td className="px-4 py-2">{log.donor.fullName}</td>
                     <td className="px-4 py-2">{log.request.bloodType}</td>
                     <td className="px-4 py-2">{log.donorBloodType}</td>
-                    <td className="px-4 py-2">{log.distance} {" km"}</td>
+                    <td className="px-4 py-2">
+                      {log.distance} {" km"}
+                    </td>
                     <td className="px-4 py-2">{log.matchedAt.split("T")[0]}</td>
+                    <td className="p-5 capitalize ">
+                      <Link
+                        className="p-3 rounded-xl bg-[#800000] text-white"
+                        to="/admin/matchinglogdetail"
+                        state={{ matchLog: log }}
+                      >
+                        Detail
+                      </Link>
+                    </td>
                   </tr>
                 ))}
                 {matchlog.length === 0 && (
