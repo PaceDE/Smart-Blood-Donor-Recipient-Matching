@@ -126,10 +126,10 @@ const deleteuserbyid = async (req, res) => {
 
     const requestIds = requests.map((req) => req._id);
 
-    if (requestIds.length>0){
+    if (requestIds.length > 0) {
       await MatchingLog.deleteMany({
-      $or: [{ request: { $in: requestIds } }, { donor: id }],
-    }).session(session)
+        $or: [{ request: { $in: requestIds } }, { donor: id }],
+      }).session(session)
 
     }
 
@@ -138,7 +138,7 @@ const deleteuserbyid = async (req, res) => {
     }).session(session);
 
     await Message.deleteMany({
-      requestId : {$in: requestIds},
+      requestId: { $in: requestIds },
     }).session(session);
 
     await session.commitTransaction();
@@ -157,7 +157,7 @@ const deleteuserbyid = async (req, res) => {
 const banuserbyid = async (req, res) => {
   try {
     const id = req.params.id;
-    const status = req.params.status; 
+    const status = req.params.status;
 
     const user = await User.findById(id);
     if (!user) {
@@ -182,7 +182,7 @@ const banuserbyid = async (req, res) => {
         await Message.deleteMany({ requestId: request._id });
       }
     } else {
-      
+
       user.ban = false;
       await user.save();
     }
@@ -211,14 +211,14 @@ const deleterequestbyid = async (req, res) => {
 
     await MatchingLog.deleteMany({ request: requestId }).session(session);
 
-    
-      await DonationHistory.deleteMany({
-       request:requestId
-      }).session(session);
-    
+
+    await DonationHistory.deleteMany({
+      request: requestId
+    }).session(session);
+
 
     await Message.deleteMany({
-      requestId:requestId
+      requestId: requestId
     }).session(session)
 
     await session.commitTransaction();
@@ -233,6 +233,88 @@ const deleterequestbyid = async (req, res) => {
     res.status(500).json({ message: "Error deleting request", error: err.message });
   }
 };
+
+const deletelogbyid = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const logId = req.params.id;
+
+    const matchLog = await MatchingLog.findById(logId).session(session);
+    if (!matchLog) {
+      throw new Error("Match log not found");
+    }
+    await MatchingLog.deleteOne({
+      _id: logId
+    }).session(session);
+
+
+    await DonationHistory.deleteOne({
+      log: logId
+    }).session(session);
+
+
+    await Message.deleteMany({
+      $and: [
+        { requestId: matchLog.request },
+        {
+          $or: [
+            { sender: matchLog.donor },
+            { recipient: matchLog.donor }
+          ]
+        }
+      ]
+
+    }).session(session)
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "MatchLog and related data deleted successfully" });
+
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error(err);
+    res.status(500).json({ message: "Error deleting Match Log", error: err.message });
+  }
+};
+
+const deletedonationbyid = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const donationId = req.params.id;
+
+    const donation = await DonationHistory.findById(donationId)
+    if (donation) {
+      await DonationHistory.deleteOne({
+        _id: donationId
+      }).session(session);
+
+      const log = await MatchingLog.findOne({ _id: donation.log })
+      if (log) {
+        log.status = "expired";
+        await log.save({ session });
+
+      }
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "MatchLog and related data deleted successfully" });
+
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error(err);
+    res.status(500).json({ message: "Error deleting Match Log", error: err.message });
+  }
+};
+
 
 
 
@@ -253,4 +335,6 @@ export {
   deleteuserbyid,
   banuserbyid,
   deleterequestbyid,
+  deletelogbyid,
+  deletedonationbyid
 };

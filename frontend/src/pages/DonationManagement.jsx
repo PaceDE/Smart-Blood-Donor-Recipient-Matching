@@ -1,11 +1,35 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../component/Loading";
 import TopBar from "../component/TopBar";
+import { useNavigate,Link } from "react-router";
+import { toast } from "react-toastify";
 
 const DonationManagement = () => {
   const [donationhistory, setDonationHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate=useNavigate();
+
+  const handleDelete = async (history) => {
+  
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/deletedonationbyid/${history._id}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        window.location.reload();
+        toast.success("Deletion Successful")
+        
+      } catch (err) {
+        setError(err.message || "Unknown error");
+      }
+    };
 
   useEffect(() => {
     const fetchDonationHistory = async () => {
@@ -60,6 +84,7 @@ const DonationManagement = () => {
                   <th className="px-4 py-3">Matched Blood Type </th>
                   <th className="px-4 py-3">Review </th>
                   <th className="px-4 py-3">Donated At </th>
+                  <th className="px-4 py-3">Action </th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -83,6 +108,13 @@ const DonationManagement = () => {
                     </td>
                     <td className="px-4 py-2">
                       {history.donatedAt.split("T")[0]}
+                    </td>
+                    <td className="p-5 capitalize ">
+                      <Link className="p-3 rounded-xl bg-[#800000] text-white"
+                       onClick={()=>handleDelete(history)}        
+                      >
+                        Delete
+                      </Link>
                     </td>
                   </tr>
                 ))}

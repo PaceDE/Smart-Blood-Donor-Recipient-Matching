@@ -58,7 +58,7 @@ const RequestManagement = () => {
                   <th className="px-4 py-3">Hospital</th>
                   <th className="px-4 py-3">SearchDistance</th>
                   <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Detail</th>
+                  <th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
