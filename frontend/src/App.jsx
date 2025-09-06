@@ -26,6 +26,7 @@ import RequestManagement from "./pages/RequestManagement";
 import MatchLogManagement from "./pages/MatchLogManagement";
 import DonationManagement from "./pages/DonationManagement";
 import UserDetail from "./pages/admin/UserDetail";
+import RequestDetail from "./pages/admin/RequestDetail";
 import MatchingDetail from "./pages/admin/MatchingDetail";
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
                 <Route path="matchlogmanagement" element={<MatchLogManagement />} />  
                 <Route path="donationmanagement" element={<DonationManagement />} /> 
                 <Route path="userdetail" element={<UserDetail />} /> 
+                <Route path="requestdetail" element={<RequestDetail />} />
                 <Route path="matchinglogdetail" element={<MatchingDetail />} />   
               </Route>
 

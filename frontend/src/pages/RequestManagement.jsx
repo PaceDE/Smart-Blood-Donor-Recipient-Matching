@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../component/Loading";
 import TopBar from "../component/TopBar";
+import { Link } from "react-router";
 
 const RequestManagement = () => {
   const [requests, setRequests] = useState([]);
@@ -57,6 +58,7 @@ const RequestManagement = () => {
                   <th className="px-4 py-3">Hospital</th>
                   <th className="px-4 py-3">SearchDistance</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Detail</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -71,7 +73,15 @@ const RequestManagement = () => {
                     <td className="px-4 py-2">{request.urgency}</td>
                     <td className="px-4 py-2">{request.hospital}</td>
                     <td className="px-4 py-2 capitalize">{request.searchDistance}{" km"}</td>
-                         <td className="px-4 py-2 capitalize">{request.status}</td>
+                    <td className="px-4 py-2 capitalize">{request.status}</td>
+                    <td className="p-5 capitalize ">
+                      <Link className="p-3 rounded-xl bg-[#800000] text-white"
+                        to="/admin/requestdetail"
+                        state={{ req: request }}
+                      >
+                        Detail
+                      </Link>
+                    </td>
                   </tr>
                 ))}
                 {requests.length === 0 && (
