@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],   
     default: 'user'
   },
+  ban:{
+    type:Boolean,
+    default:false
+  }
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

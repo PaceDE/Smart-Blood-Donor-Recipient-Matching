@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../component/Loading";
 import TopBar from "../component/TopBar";
+import { Link } from "react-router";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -56,6 +57,7 @@ const UserManagement = () => {
                   <th className="px-4 py-3">Phone</th>
                   <th className="px-4 py-3">Blood Type</th>
                   <th className="px-4 py-3">Role</th>
+                  <th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -70,6 +72,15 @@ const UserManagement = () => {
                     <td className="px-4 py-2">{user.phone}</td>
                     <td className="px-4 py-2">{user.bloodType}</td>
                     <td className="px-4 py-2 capitalize">{user.role}</td>
+                    
+                    <td className="p-5 capitalize ">
+                      <Link className="p-3 rounded-xl bg-[#800000] text-white"
+                        to="/admin/userdetail"
+                        state={{ userId: user._id }}
+                      >
+                        Detail
+                      </Link>
+                    </td>
                   </tr>
                 ))}
                 {users.length === 0 && (

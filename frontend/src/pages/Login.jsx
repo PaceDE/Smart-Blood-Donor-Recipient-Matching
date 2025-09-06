@@ -65,7 +65,7 @@ function Login() {
         }
         navigate("/home");
       } else {
-        toast.error("Invalid credentials");
+        toast.error(data.msg);
         setIsSubmitting(false);
         setLoginError(data.msg);
       }

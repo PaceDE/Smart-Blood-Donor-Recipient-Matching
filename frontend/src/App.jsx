@@ -25,6 +25,7 @@ import UserManagement from "./pages/UserManagement";
 import RequestManagement from "./pages/RequestManagement";
 import MatchLogManagement from "./pages/MatchLogManagement";
 import DonationManagement from "./pages/DonationManagement";
+import UserDetail from "./pages/admin/UserDetail";
 
 function App() {
   return (
@@ -68,7 +69,8 @@ function App() {
                 <Route path="usermanagement" element={<UserManagement />} /> 
                 <Route path="requestmanagement" element={<RequestManagement />} />
                 <Route path="matchlogmanagement" element={<MatchLogManagement />} />  
-                <Route path="donationmanagement" element={<DonationManagement />} />  
+                <Route path="donationmanagement" element={<DonationManagement />} /> 
+                <Route path="userdetail" element={<UserDetail />} />   
               </Route>
 
               <Route path="/unauthorized" element={<Unauthorized />} />

@@ -22,11 +22,22 @@ export const AuthProvider = ({ children }) => {
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            setUser(data.user);
+            if(data.user.ban){
+              setUser(null);
+            setHealthInfo(null)
+            setTotalDonations(0);
+            setTotalRequests(0);
+            setIsLoggedIn(false);
+
+            }else{
+              setUser(data.user);
             setHealthInfo(data.healthInfo);
             setTotalDonations(data.totalDonations);
             setTotalRequests(data.totalRequests);
             setIsLoggedIn(true);
+
+            }
+            
           } else {
             setUser(null);
             setHealthInfo(null)

@@ -8,7 +8,7 @@ import { getVincenty,pendingNotifications,markNotification,matchedLog,updateMatc
 import { createRequest,updateRequest } from "../controller/requestController.js";
 import { getMessages,messageRead,messageNotification } from "../controller/messageController.js";
 import { donationRecorded } from "../controller/donationController.js";
-import { getAllRequests, getAllUsers,getAllMatchLog, getAllDonationHistory } from "../controller/adminController.js";
+import { getAllRequests, getAllUsers,getAllMatchLog, getAllDonationHistory,getUserById,deletuserbyid,banuserbyid,test } from "../controller/adminController.js";
 
 router.post("/register", register);
 router.get('/auth-check',verifyToken, fetchUser);
@@ -47,5 +47,13 @@ router.get('/getallrequests',verifyToken,getAllRequests);
 router.get('/getallmatchlog',verifyToken,getAllMatchLog);
 
 router.get('/getalldonationhistory',verifyToken,getAllDonationHistory);
+
+router.get('/getuserbyid/:id',verifyToken,getUserById)
+
+router.delete('/deleteuserbyid/:id',verifyToken,deletuserbyid)
+
+router.put('/banuserbyid/:id/:status',verifyToken,banuserbyid);
+
+router.put('/test',test)
 export { router };
 

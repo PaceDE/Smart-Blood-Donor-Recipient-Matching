@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { generateAccessToken } from "./authController.js"
+import { generateAccessToken } from "./authController.js";
 import User from "../models/users.js";
 import HealthInfo from "../models/healthinfo.js";
 import RequestInfo from "../models/requestinfo.js";
@@ -18,23 +18,27 @@ import DonationHistory from "../models/donationhistory.js";
     }
 };*/
 
-
-
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
 
   if (!accessToken) {
     // No access token, try refresh token
-    if (!refreshToken) return res.status(401).json({ success: false, msg: "No tokens provided" });
+    if (!refreshToken)
+      return res
+        .status(401)
+        .json({ success: false, msg: "No tokens provided" });
 
     try {
-      const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+      const decodedRefresh = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      );
 
       // Generate new access token
       const newAccessToken = generateAccessToken(decodedRefresh);
 
-      res.cookie('accessToken', newAccessToken, {
+      res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
@@ -42,9 +46,15 @@ const verifyToken = (req, res, next) => {
       });
 
       req.user = decodedRefresh;
-      return next(); 
+      const user = await User.findById(req.user._id);
+      if (user.ban) {
+        return res.status(403).json({ success: false, msg: "You are banned" });
+      }
+      return next();
     } catch (err) {
-      return res.status(403).json({ success: false, msg: "Invalid refresh token" });
+      return res
+        .status(403)
+        .json({ success: false, msg: "Invalid refresh token" });
     }
   }
 
@@ -52,15 +62,21 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     req.user = decoded;
-    return next(); 
+    const user = await User.findById(req.user._id);
+    if (user.ban) {
+      return res.status(403).json({ success: false, msg: "You are banned" });
+    }
+    return next();
   } catch (err) {
-    return res.status(403).json({ success: false, msg: "Invalid access token" });
+    return res
+      .status(403)
+      .json({ success: false, msg: "Invalid access token" });
   }
 };
 
-const fetchUser = async (req,res)=>{
-      try {
-    const user = await User.findById(req.user._id).select('-password');
+const fetchUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
     const healthInfo = await HealthInfo.findOne({ user: req.user._id });
 
     if (!user) {
@@ -68,20 +84,24 @@ const fetchUser = async (req,res)=>{
     }
 
     // Count total donations and requests for this user
-    const totalDonations = await DonationHistory.countDocuments({ donor: req.user._id });
-    const totalRequests = await RequestInfo.countDocuments({ requester: req.user._id });
+    const totalDonations = await DonationHistory.countDocuments({
+      donor: req.user._id,
+    });
+    const totalRequests = await RequestInfo.countDocuments({
+      requester: req.user._id,
+    });
 
     res.json({
       success: true,
       user,
       healthInfo,
       totalDonations,
-      totalRequests
+      totalRequests,
     });
   } catch (err) {
     console.error("Auth check error:", err);
     res.status(500).json({ success: false, msg: "Server error" });
   }
-} 
+};
 
-export { verifyToken,fetchUser };
+export { verifyToken, fetchUser };
