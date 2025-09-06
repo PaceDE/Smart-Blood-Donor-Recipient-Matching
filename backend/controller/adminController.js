@@ -110,7 +110,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-const deletuserbyid = async (req, res) => {
+const deleteuserbyid = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -125,12 +125,20 @@ const deletuserbyid = async (req, res) => {
     await RequestInfo.deleteMany({ requester: id }).session(session);
 
     const requestIds = requests.map((req) => req._id);
-    await MatchingLog.deleteMany({
+
+    if (requestIds.length>0){
+      await MatchingLog.deleteMany({
       $or: [{ request: { $in: requestIds } }, { donor: id }],
-    }).session(session);
+    }).session(session)
+
+    }
 
     await DonationHistory.deleteMany({
       $or: [{ donor: id }, { recipient: id }],
+    }).session(session);
+
+    await Message.deleteMany({
+      requestId : {$in: requestIds},
     }).session(session);
 
     await session.commitTransaction();
@@ -186,6 +194,48 @@ const banuserbyid = async (req, res) => {
 };
 
 
+
+const deleterequestbyid = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const requestId = req.params.id;
+
+    const requestDoc = await RequestInfo.findById(requestId).session(session);
+    if (!requestDoc) {
+      throw new Error("Request not found");
+    }
+
+    await RequestInfo.deleteOne({ _id: requestId }).session(session);
+
+    await MatchingLog.deleteMany({ request: requestId }).session(session);
+
+    
+      await DonationHistory.deleteMany({
+       request:requestId
+      }).session(session);
+    
+
+    await Message.deleteMany({
+      requestId:requestId
+    }).session(session)
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "Request and related data deleted successfully" });
+
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error(err);
+    res.status(500).json({ message: "Error deleting request", error: err.message });
+  }
+};
+
+
+
 const test = async (req, res) => {
   await User.updateMany(
     { ban: { $exists: false } }, // only those missing the field
@@ -200,6 +250,7 @@ export {
   getAllDonationHistory,
   getUserById,
   test,
-  deletuserbyid,
-  banuserbyid
+  deleteuserbyid,
+  banuserbyid,
+  deleterequestbyid,
 };
