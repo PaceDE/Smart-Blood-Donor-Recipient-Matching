@@ -61,7 +61,7 @@ const login = async (req, res) => {
                 .status(400)
                 .json({ success: false, msg: "Invalid credentials" });
         }
-        if(user.ban){
+        if (user.ban) {
             return res
                 .status(400)
                 .json({ success: false, msg: "You have been banned" });
@@ -75,7 +75,7 @@ const login = async (req, res) => {
         }
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        const { password:_, ...userData } = user._doc;
+        const { password: _, ...userData } = user._doc;
         const healthInfo = await HealthInfo.findOne({ user: user._id });
         const totalDonations = await DonationHistory.countDocuments({ donor: user._id });
         const totalRequests = await RequestInfo.countDocuments({ requester: user._id });
@@ -93,7 +93,7 @@ const login = async (req, res) => {
                 sameSite: "Strict",
                 maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
             })
-            .json({ success: true, msg: "Login successful", user: userData, healthInfo: healthInfo,totalDonations:totalDonations,totalRequests:totalRequests });
+            .json({ success: true, msg: "Login successful", user: userData, healthInfo: healthInfo, totalDonations: totalDonations, totalRequests: totalRequests });
     }
     catch (err) {
         console.error("Login Error:", err);
@@ -106,9 +106,9 @@ const logout = (req, res) => {
     res.clearCookie("accessToken").clearCookie("refreshToken").json({ success: true, msg: "Logged out" });
 };
 
-const updatePersonalInfo = async (req,res) =>{
+const updatePersonalInfo = async (req, res) => {
     try {
-        
+
         const userId = req.user._id; // from verifyToken middleware
         const updates = req.body;
 
@@ -117,18 +117,37 @@ const updatePersonalInfo = async (req,res) =>{
             updates,
             { new: true, runValidators: true }
         );
-      
+
 
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.json({user:updatedUser});
+        res.json({ user: updatedUser });
     } catch (err) {
-        
+
         console.error('Error updating user:', err);
         res.status(500).json({ message: 'Server error' });
     }
 }
 
-export { register, login, logout, generateAccessToken,generateRefreshToken,updatePersonalInfo };
+const updateHealthInfo = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const updates = req.body;
+        const updatedInfo = await HealthInfo.findOneAndUpdate(
+            { user: userId },
+            { $set: updates },
+            { new: true, runValidators: true }
+        )
+        if (!updatedInfo)
+            return res.status(404).json({ message: "Healthinfo not found" });
+
+        res.status(200).json({healthInfo:updatedInfo});
+    } catch (err) {
+        console.error('Error updating healthinfo', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+export { register, login, logout, generateAccessToken, generateRefreshToken, updatePersonalInfo, updateHealthInfo };

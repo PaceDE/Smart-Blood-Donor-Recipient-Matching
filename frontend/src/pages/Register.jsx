@@ -116,7 +116,7 @@ export default function Register() {
                     <div className="w-full p-10 bg-white">
 
                         <form className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
 
                                 <div className="form-element">
                                     <label htmlFor="fullName" className="text-gray-700 font-medium mb-2 block">
@@ -131,7 +131,7 @@ export default function Register() {
                                             id="fullName"
                                             type="text"
                                             placeholder="Enter your full name"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.fullName}
                                             onChange={handleChange}
                                         />
@@ -152,7 +152,7 @@ export default function Register() {
                                         <input
                                             id="dateOfBirth"
                                             type="date"
-                                            className="pl-10 pr-5 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 pr-5 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.dateOfBirth}
                                             onChange={handleChange}
                                         />
@@ -171,7 +171,7 @@ export default function Register() {
                                         />
                                         <select
                                             id="gender"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.gender}
                                             onChange={handleChange}
                                         >
@@ -197,7 +197,7 @@ export default function Register() {
                                         />
                                         <select
                                             id="bloodType"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.bloodType}
                                             onChange={handleChange}
                                         >
@@ -225,7 +225,7 @@ export default function Register() {
                                             id="email"
                                             type="email"
                                             placeholder="Enter your Email address"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.email}
                                             onChange={handleChange}
 
@@ -248,7 +248,7 @@ export default function Register() {
                                             id="phone"
                                             type="tel"
                                             placeholder="Enter your phone number"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.phone}
                                             onChange={handleChange}
 
@@ -271,7 +271,7 @@ export default function Register() {
                                             id="password"
                                             type="password"
                                             placeholder="Enter your password"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.password}
                                             onChange={handleChange}
 
@@ -294,7 +294,7 @@ export default function Register() {
                                             id="confirmPassword"
                                             type="password"
                                             placeholder="Re-enter your password"
-                                            className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                            className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
 

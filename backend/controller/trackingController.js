@@ -60,6 +60,18 @@ export const getAppTrackingStats = async (req, res) => {
       bloodTypeDistribution[type] = await User.countDocuments({ bloodType: type });
     }
 
+    const bloodReqDistribution ={};
+    for (const type of bloodTypes) {
+      bloodReqDistribution[type] = await RequestInfo.countDocuments({ bloodType: type });
+    }
+
+    const bloodDonateDistribution ={};
+    const donors = await DonationHistory.find().populate({path:'donor',select:'bloodType'})
+    for (const type of bloodTypes) {
+      const currentDonor = donors.filter((d)=> d.donor?.bloodType==type)
+      bloodDonateDistribution[type] = currentDonor.length;
+    }
+
     res.json({
       totalUsers,
       usersThisMonth,
@@ -70,6 +82,8 @@ export const getAppTrackingStats = async (req, res) => {
       totalRequests,
       requestGrowth: requestGrowth.toFixed(2),
       bloodTypeDistribution,
+      bloodReqDistribution,
+      bloodDonateDistribution
     });
   } catch (error) {
     console.error('Error in getAppTrackingStats:', error);

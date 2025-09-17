@@ -18,13 +18,13 @@ import { AppTrackingProvider } from "./component/AppTrackingContext";
 import { SocketProvider } from "./component/SocketContext";
 import Reviews from "./pages/Reviews";
 
-import AdminLayout from "./component/AdminLayout";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminLayout from "./component/admin/AdminLayout";
+
 import Unauthorized from "./pages/Unauthorized";
-import UserManagement from "./pages/UserManagement";
-import RequestManagement from "./pages/RequestManagement";
-import MatchLogManagement from "./pages/MatchLogManagement";
-import DonationManagement from "./pages/DonationManagement";
+import UserManagement from "./pages/admin/UserManagement";
+import RequestManagement from "./pages/admin/RequestManagement";
+import MatchLogManagement from "./pages/admin/MatchLogManagement";
+import DonationManagement from "./pages/admin/DonationManagement";
 import UserDetail from "./pages/admin/UserDetail";
 import RequestDetail from "./pages/admin/RequestDetail";
 import MatchingDetail from "./pages/admin/MatchingDetail";
@@ -66,14 +66,15 @@ function App() {
                   </PrivateRoute>
                 }
               >
-                <Route index path="dashboard" element={<AdminDashboard />} />
+                <Route index path="dashboard" element={<Home />} />
                 <Route path="usermanagement" element={<UserManagement />} /> 
                 <Route path="requestmanagement" element={<RequestManagement />} />
                 <Route path="matchlogmanagement" element={<MatchLogManagement />} />  
                 <Route path="donationmanagement" element={<DonationManagement />} /> 
                 <Route path="userdetail" element={<UserDetail />} /> 
                 <Route path="requestdetail" element={<RequestDetail />} />
-                <Route path="matchinglogdetail" element={<MatchingDetail />} />   
+                <Route path="matchinglogdetail" element={<MatchingDetail />} />
+                <Route path="profile" element={<Profile />} />   
               </Route>
 
               <Route path="/unauthorized" element={<Unauthorized />} />

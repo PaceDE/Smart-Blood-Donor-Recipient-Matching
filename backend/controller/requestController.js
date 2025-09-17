@@ -69,10 +69,11 @@ const createRequest = async (req, res) => {
                     donor.user.latitude,
                     donor.user.longitude
                 );
-                return { donor, distance: distance.toFixed(2) };
+            
+                
+                return { donor, distance: Number(distance.toFixed(2)) };
             })
-            .filter(entry => entry.distance <= requestInfo.searchDistance);
-       
+            .filter(entry => entry.distance <= Number(requestInfo.searchDistance));
 
         const request = new RequestInfo({ ...requestInfo, requester: req.user._id,matchedCount:nearbyDonors.length })
         await request.save();

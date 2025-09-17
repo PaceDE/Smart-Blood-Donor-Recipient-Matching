@@ -101,7 +101,7 @@ const LocationPicker = ({coordinates,setCoordinates}) => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Enter nearest Landmark then select precisely.."
-                    className="flex-grow px-4 py-2 text-lg placeholder:text-[12px] md:placeholder:text-lg rounded-md h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                    className="flex-grow px-4 py-2 text-lg placeholder:text-[12px] md:placeholder:text-lg rounded-md h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                     onKeyPress={(e) => e.key === 'Enter' && handleGeocode()}
                 />
                 <button

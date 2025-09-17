@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../component/Loading";
-import TopBar from "../component/TopBar";
+import Loading from "../../component/Loading";
+import TopBar from "../../component/TopBar";
 import { Link } from "react-router";
 
 const UserManagement = () => {
@@ -17,6 +17,8 @@ const UserManagement = () => {
   const banStatusType = ["All", "Banned", "Unbanned"];
   const roleType = ["All", "user", "admin"];
 
+
+  {/* Filtering */ }
   useEffect(() => {
 
     let filtered = [...unfilteredUsers];
@@ -47,6 +49,8 @@ const UserManagement = () => {
     setUsers(filtered);
   }, [bloodFilter, banFilter, roleFilter, searchQuery, unfilteredUsers])
 
+
+  {/* Fetching User */ }
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -91,59 +95,68 @@ const UserManagement = () => {
 
       <main className="flex-1 p-6">
 
-        <div className="flex gap-4 my-4">
+        <div className="flex gap-4 sm:gap-6 md:gap-8 my-4">
           {/* Blood Type Filter */}
           <div>
-            <label className="mr-2 font-medium">Filter By Blood Type:</label>
-            <select
-              value={bloodFilter}
-              onChange={(e) => setBloodFilter(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            >
-              {bloodType.map((bt) => (
-                <option key={bt} value={bt}>{bt}</option>
-              ))}
-            </select>
+            <div className="flex flex-col">
+              <label className="font-medium">Filter By Blood Type:</label>
+              <select
+                value={bloodFilter}
+                onChange={(e) => setBloodFilter(e.target.value)}
+                className=" px-2 py-1 border-b-0 border-2 border-red-200 transition-colors duration-300 ease-linear focus:outline-none focus:border-red-500"
+              >
+                {bloodType.map((bt) => (
+                  <option key={bt} value={bt} style={{ backgroundColor: '#fee2e2', color: '#7f1d1d' }}>{bt}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Role Type Filter */}
           <div>
-            <label className="mr-2 font-medium">Filter By Role Type:</label>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            >
-              {roleType.map((rt) => (
-                <option key={rt} value={rt}>{rt}</option>
-              ))}
-            </select>
+            <div className="flex flex-col">
+
+
+              <label className="mr-2 font-medium">Filter By Role Type:</label>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className=" px-2 py-1 border-b-0 border-2 border-red-200 transition-colors duration-300 ease-linear focus:outline-none focus:border-red-500"
+              >
+                {roleType.map((rt) => (
+                  <option key={rt} value={rt} style={{ backgroundColor: '#fee2e2', color: '#7f1d1d' }}>{rt}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Ban Status Filter */}
           <div>
-            <label className="mr-2 font-medium">Filter By Ban Status:</label>
-            <select
-              value={banFilter}
-              onChange={(e) => setBanFilter(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1"
-            >
-              {banStatusType.map((bst) => (
-                <option key={bst} value={bst}>{bst}</option>
-              ))}
-            </select>
+            <div className="flex flex-col">
+              <label className="mr-2 font-medium">Filter By Ban Status:</label>
+              <select
+                value={banFilter}
+                onChange={(e) => setBanFilter(e.target.value)}
+                className=" px-2 py-1 border-b-0 border-2 border-red-200 transition-colors duration-300 ease-linear focus:outline-none focus:border-red-500"
+              >
+                {banStatusType.map((bst) => (
+                  <option key={bst} value={bst} style={{ backgroundColor: '#fee2e2', color: '#7f1d1d' }}>{bst}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
+        {/* Search Field */}
         <div className="search-Field">
           <label htmlFor="searchField">Search by name:</label>
-          <input type="text" id="searchField" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Type Name..." className="p-2 m-3 border-b-2 border-b-red-100 transition-colors duration-300 ease-linear focus:outline-none focus:border-b-red-500" />
+          <input type="text" id="searchField" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Type Name..." className="p-2 m-3 border-b-2 border-b-red-200 transition-colors duration-300 ease-linear focus:outline-none focus:border-b-red-500" />
 
         </div>
 
 
 
-
+        {/* Table */}
         <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
           <table className="min-w-full text-sm text-left text-gray-700">
             <thead className="bg-red-500 text-white">

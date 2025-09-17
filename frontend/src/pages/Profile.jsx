@@ -10,6 +10,8 @@ import {
   faUserLock
 } from '@fortawesome/free-solid-svg-icons';
 import { faUser as faName, faCalendar, faEnvelope } from '@fortawesome/free-regular-svg-icons';
+import HealthInfo from '../component/HealthInfo';
+import ChangePassword from '../component/ChangePassword';
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("personalInfo");
@@ -67,11 +69,10 @@ export default function Profile() {
 
             </div>
 
-            <div className="w-full p-10 bg-white">
-              {/* Render tab content based on activeTab */}
+            <div className="w-full p-10 bg-white" >
               {activeTab === "personalInfo" && <PersonalInfo />}
-              {activeTab === "healthInfo" && <div>Health Info Content</div>}
-              {activeTab === "changePassword" && <div>Change Password Content</div>}
+              {activeTab === "healthInfo" && <HealthInfo/>}
+              {activeTab === "changePassword" && <ChangePassword/>}
             </div>
 
           </div>

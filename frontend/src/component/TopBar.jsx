@@ -9,7 +9,7 @@ import {
 import { useAuth } from './AuthContext';
 
 const TopBar = ({ heading, text }) => {
-  const { logout } = useAuth();
+  const { user,logout } = useAuth();
   const navigate = useNavigate();
                                   
   const handleLogout = async () => {
@@ -27,7 +27,7 @@ const TopBar = ({ heading, text }) => {
       </div>
       <div className='flex'>
         <Link
-          to="/home/profile"
+          to={user.role=="user"? "/home/profile" : "/admin/profile"}
           className="flex flex-col items-center p-3 w-20 text-red-500 hover:bg-red-50 rounded-xl hover:shadow-sm transition-all duration-300"
         >
 

@@ -106,9 +106,7 @@ function Login() {
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1">
                 <div className="form-element">
-                  <label htmlFor="email" className="text-gray-700 font-medium mb-2 block">
-                    Email Address *
-                  </label>
+                  
                   <div className="relative">
                     <FontAwesomeIcon
                       icon={faEnvelope}
@@ -118,7 +116,7 @@ function Login() {
                       id="email"
                       type="email"
                       placeholder="Enter your Email address"
-                      className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                      className="pl-10 w-full h-12 rounded-md border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
 
@@ -128,10 +126,7 @@ function Login() {
                 </div>
 
                 {/* Password */}
-                <div className="form-element">
-                  <label htmlFor="password" className="text-gray-700 font-medium mb-2 block">
-                    Password *
-                  </label>
+                <div className="form-element my-8">
                   <div className="relative">
                     <FontAwesomeIcon
                       icon={faLock}
@@ -141,7 +136,7 @@ function Login() {
                       id="password"
                       type={showPassword? "text":"password"}
                       placeholder="Enter your password"
-                      className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                      className="pl-10 w-full h-12 rounded-md border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
 

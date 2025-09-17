@@ -67,7 +67,7 @@ function MatchingDetail() {
       setError(err.message || "Unknown error");
     }
   };
-  
+
   if (loading) {
     return <p className="p-4 text-gray-600">Loading...</p>;
   }
@@ -90,12 +90,12 @@ function MatchingDetail() {
       <main className="container min-w-full py-5 px-2 md:px-10 lg:px-30">
         <div className="rounded-lg mt-6 border border-gray-200 shadow-md">
           <div className="bg-white border-b-[2px] border-gray-200 w-full h-14 text-black px-5 font-medium flex items-center">
-            <p>Request by {log.request.requester.fullName} Matched with {log.donor.fullName}</p>
+            <p>Request by {log.request.requester.fullName} Matched with </p>
           </div>
 
           <div className="w-full p-10 bg-white">
             <form className="space-y-6">
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3">
                 {/* Req Full Name */}
                 <div className="form-element">
@@ -149,7 +149,7 @@ function MatchingDetail() {
                     htmlFor="reqbloodType"
                     className="text-gray-700 font-medium"
                   >
-                   Request Blood Type *
+                    Request Blood Type *
                   </label>
                   <div className="relative mt-2">
                     <FontAwesomeIcon
@@ -173,7 +173,7 @@ function MatchingDetail() {
                     htmlFor="donbloodType"
                     className="text-gray-700 font-medium"
                   >
-                   Donor Blood Type *
+                    Donor Blood Type *
                   </label>
                   <div className="relative mt-2">
                     <FontAwesomeIcon
@@ -196,7 +196,7 @@ function MatchingDetail() {
                     htmlFor="distance"
                     className="text-gray-700 font-medium"
                   >
-                   Donor Distance *
+                    Donor Distance *
                   </label>
                   <div className="relative mt-2">
                     <FontAwesomeIcon
@@ -219,7 +219,7 @@ function MatchingDetail() {
                     htmlFor="matcheddate"
                     className="text-gray-700 font-medium"
                   >
-                   Matched Date *
+                    Matched Date *
                   </label>
                   <div className="relative mt-2">
                     <FontAwesomeIcon
@@ -230,7 +230,7 @@ function MatchingDetail() {
                       id="matcheddate"
                       type="date"
                       className="pl-10 rounded-md w-full h-12 border border-gray-300"
-                      value={log.matchedAt?
+                      value={log.matchedAt ?
                         new Date(log.matchedAt).toISOString().split('T')[0]
                         : ""
                       }
@@ -239,14 +239,14 @@ function MatchingDetail() {
                   </div>
                 </div>
 
-                
+
                 {/* Notification Sent */}
                 <div className="form-element">
                   <label
                     htmlFor="notification"
                     className="text-gray-700 font-medium"
                   >
-                   Notification Status *
+                    Notification Status *
                   </label>
                   <div className="relative mt-2">
                     <FontAwesomeIcon
@@ -257,7 +257,7 @@ function MatchingDetail() {
                       id="notification"
                       type="text"
                       className="pl-10 rounded-md w-full h-12 border border-gray-300"
-                      value={` ${ log.notification_sent ? "Sent":"Not sent"}`}
+                      value={` ${log.notification_sent ? "Sent" : "Not sent"}`}
                       readOnly
                     />
                   </div>
@@ -268,10 +268,10 @@ function MatchingDetail() {
                     htmlFor="notificationRead"
                     className="text-gray-700 font-medium"
                   >
-                   Notification Read *
+                    Notification Read *
                   </label>
                   <div className="relative mt-2">
-                
+
                     <input
                       id="notificationRead"
                       type="checkbox"
@@ -281,13 +281,13 @@ function MatchingDetail() {
                     />
                   </div>
                 </div>
-                      {/*Notification Status*/}
-                       <div className="form-element">
+                {/*Notification Status*/}
+                <div className="form-element">
                   <label
                     htmlFor="logStatus"
                     className="text-gray-700 font-medium"
                   >
-                   Log Status *
+                    Log Status *
                   </label>
                   <div className="relative mt-2">
                     <FontAwesomeIcon
@@ -309,7 +309,7 @@ function MatchingDetail() {
 
 
 
-              
+
 
               <div className="grid grid-cols-1  gap-4">
                 <button
@@ -319,7 +319,7 @@ function MatchingDetail() {
                 >
                   Delete
                 </button>
-                
+
               </div>
             </form>
           </div>

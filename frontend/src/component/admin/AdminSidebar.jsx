@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../assets/bloodlink-logo.svg';
+import logo from '../../assets/bloodlink-logo.svg';
 import { Link, useLocation} from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -17,7 +17,7 @@ const menuItems = [
   { path: '/admin/requestmanagement', label: 'Request', icon: faHandHoldingDroplet },
   { path: '/admin/usermanagement', label: 'User', icon: faTruckDroplet },
   { path: '/admin/dashboard', label: 'Dashboard', icon: faHome },
-  { path: '/admin/matchlogmanagement', label: 'Match Log', icon: faComment },
+  { path: '/admin/matchlogmanagement', label: 'MatchLog', icon: faComment },
    { path: '/admin/donationmanagement', label: 'Donation', icon: faComment },
 ];
 
@@ -69,7 +69,7 @@ const AdminSidebar = () => {
                         icon={item.icon}
                         className={`text-xl mb-2 ${isActive ? 'scale-110 text-white' : 'text-red-500'}`}
                       />
-                      <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-red-500'}`}>
+                      <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-red-500'} text-center`}>
                         {item.label}
                       </span>
                     </Link>

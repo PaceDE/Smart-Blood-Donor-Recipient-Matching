@@ -39,7 +39,6 @@ const getAllMatchLog = async (req, res) => {
     const matchinglog = await MatchingLog.find()
       .populate({
         path: "request",
-        select: "requester bloodType",
         populate: {
           path: "requester",
           select: "-password",
@@ -73,10 +72,14 @@ const getAllDonationHistory = async (req, res) => {
       })
       .populate({
         path: "request",
-        select: "bloodType",
+        populate: {path:'requester',select:'-password'}
       })
       .populate({
         path: "log",
+        populate: [
+          { path: 'request', populate: { path: 'requester', select: '-password' } },
+          { path: 'donor', select: '-password' }
+        ]
       })
 
       .sort({ createdAt: -1 });

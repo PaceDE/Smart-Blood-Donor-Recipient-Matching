@@ -361,7 +361,7 @@ function UserDetail() {
                       type="checkbox"
                       id="hasDiseases"
                       className="pl-3 rounded-md w-12 h-12 border border-gray-300"
-                      value={users.has_disease}
+                      checked={users.has_disease}
                       disabled
                     ></input>
                   </div>

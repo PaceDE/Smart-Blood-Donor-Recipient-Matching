@@ -23,7 +23,7 @@ import Loading from './Loading';
 const PersonalInfo = () => {
     const { user,setUser } = useAuth();
     const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
-    const navigate = useNavigate()
+    const[isSubmitting,setIsSubmitting]=useState(false);
     const [errors, setErrors] = useState({})
     const [edit, setEdit] = useState(false);
 
@@ -105,7 +105,8 @@ const PersonalInfo = () => {
     const handleSave = async () => {
         if (!validateForm())
             return;
-
+        
+        setIsSubmitting(true);
         // since setFormdata is asynchronous so old formdata is saved so we use local var
         const updatedForm = {
             ...formData,
@@ -129,10 +130,14 @@ const PersonalInfo = () => {
 
             toast.success("User's Personal Info updated successfully!");
 
-            navigate('/home/profile');
         } catch (error) {
             console.error('Error updating user:', error);
             toast.error("Failed to save changes. Please try again.");
+        }
+        finally{
+            setIsSubmitting(false);
+            setEdit(false);
+
         }
 
 
@@ -179,7 +184,7 @@ const PersonalInfo = () => {
                                 id="fullName"
                                 type="text"
                                 placeholder="Enter your full name"
-                                className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.fullName}
                                 onChange={handleChange}
                                 readOnly={!edit}
@@ -201,7 +206,7 @@ const PersonalInfo = () => {
                             <input
                                 id="dateOfBirth"
                                 type="date"
-                                className="pl-10 pr-5 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 pr-5 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.dateOfBirth}
                                 onChange={handleChange}
                                 readOnly={!edit}
@@ -221,7 +226,7 @@ const PersonalInfo = () => {
                             />
                             <select
                                 id="gender"
-                                className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.gender}
                                 onChange={handleChange}
                                 disabled={!edit}
@@ -246,7 +251,7 @@ const PersonalInfo = () => {
                             />
                             <select
                                 id="bloodType"
-                                className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.bloodType}
                                 onChange={handleChange}
                                 disabled={!edit}
@@ -275,7 +280,7 @@ const PersonalInfo = () => {
                                 id="email"
                                 type="email"
                                 placeholder="Enter your Email address"
-                                className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.email}
                                 onChange={handleChange}
                                 readOnly={!edit}
@@ -299,7 +304,7 @@ const PersonalInfo = () => {
                                 id="phone"
                                 type="tel"
                                 placeholder="Enter your phone number"
-                                className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.phone}
                                 onChange={handleChange}
                                 readOnly={!edit}
@@ -323,7 +328,7 @@ const PersonalInfo = () => {
                             />
                             <input
                                 type="text"
-                                className="pl-10 rounded-md w-full h-12 border border-gray-300 ring-offset-2 focus:outline-none focus:border-red-500 focus:ring-red-500 focus:ring-2"
+                                className="pl-10 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
                                 value={formData.address}
                                 readOnly
                             />
@@ -353,7 +358,7 @@ const PersonalInfo = () => {
                                     icon={faFloppyDisk}
                                     className="mr-2"
                                 />
-                                <button type="button" className=''>Save Changes</button>
+                                <button type="button" className='' disabled={isSubmitting}>{!isSubmitting? "Save Changes" : "Saving"}</button>
                             </div>
 
                             <div onClick={handleCancel} className='bg-white text-black border border-gray-300 rounded-lg p-2 px-5 hover:bg-gray-50'>

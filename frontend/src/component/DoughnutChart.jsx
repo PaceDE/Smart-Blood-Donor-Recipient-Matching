@@ -5,7 +5,7 @@ import Color from 'color'
 Chart.register(...registerables);
 defaults.maintainAspectRatio = true;
 
-const DoughnutChart = ({labels,label,values,colors}) => {
+const DoughnutChart = ({labels,label,values,colors,darkColors}) => {
 const total = values.reduce((sum, val) => sum + val, 0);
 
   const chartData = {
@@ -18,7 +18,7 @@ const total = values.reduce((sum, val) => sum + val, 0);
         label: label,
         data: values,
         backgroundColor: colors,
-        hoverBackgroundColor: colors.map(c => Color(c).darken(0.2).hex()),
+        hoverBackgroundColor: darkColors,
         borderColor: '#fff',
         borderWidth: 1,
         hoverOffset: 10,
