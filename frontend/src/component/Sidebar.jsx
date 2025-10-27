@@ -33,6 +33,7 @@ const Sidebar = ({ donateSectionUnread,setDonateSectionUnread, requestSectionUnr
   let page;
   if (location.pathname.includes("request")) page = "request";
   else if (location.pathname.includes("donate")) page = "donate";
+  else page = "others";
   console.log("Page: ",page)
 
   const markLogRead = async () => {

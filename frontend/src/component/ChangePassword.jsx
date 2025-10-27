@@ -8,19 +8,14 @@ import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
 import Loading from './Loading';
 
-const WILLINGNESS_CHOICES = [
-    { value: 1, text: "1 - Not willing at all" },
-    { value: 2, text: "2 - Somewhat willing" },
-    { value: 3, text: "3 - Neutral" },
-    { value: 4, text: "4 - Willing" },
-    { value: 5, text: "5 - Very willing" },
-];
-
 const ChangePassword = () => {
     const { user } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [oldPassword, setOldPassword] = useState('')
     const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState()
+    const [confirmPassword, setConfirmPassword] = useState('')
+    
+    const [showOldPassword, setShowOldPassword] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -38,7 +33,7 @@ const ChangePassword = () => {
 
         setIsSubmitting(true);
         // since setFormdata is asynchronous so old formdata is saved so we use local var
-        const updatedForm = { password };
+        const updatedForm = { password,oldPassword};
 
         try {
             const response = await fetch("http://localhost:5000/api/changePassword", {
@@ -47,17 +42,20 @@ const ChangePassword = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedForm),
             });
-            if (!response.ok) {
-                throw new Error('Failed t');
-            }
+           
             const data = await response.json();
-            setHealthInfo(data.healthInfo);
+             if (!response.ok) {
+                throw new Error(data.message);
+            }
 
-            toast.success("User's Health Info updated successfully!");
+            toast.success(data.message);
+            setTimeout(()=>{
+                window.location.reload();
+            },1500);
 
         } catch (error) {
-            console.error('Error updating user:', error);
-            toast.error("Failed to save changes. Please try again.");
+            console.error('Error changing message:', error);
+            toast.error(error.message);
         }
         finally {
             setIsSubmitting(false);
@@ -73,6 +71,8 @@ const ChangePassword = () => {
     const validateForm = () => {
         const newErrors = {};
 
+        if (oldPassword === '')
+            newErrors.oldPassword = "This field is required";
         if (password === '')
             newErrors.password = "This field is required";
         if (password.length < 8)
@@ -91,6 +91,34 @@ const ChangePassword = () => {
 
             <form className="space-y-6">
                 <div className="grid grid-cols-1 gap-y-3">
+
+                    <div className="form-element">
+                        <label htmlFor="oldPassword" className="text-gray-700 font-medium">
+                            Old Password *
+                        </label>
+
+                        <div className='input-box relative'>
+
+                            <input
+                                id="oldPassword"
+                                type={showOldPassword ? "text" : "password"}
+                                className="pl-4 rounded-md w-full h-12 border-b-2 border-b-red-200 focus:outline-none focus:border-b-red-500 transition-colors duration-300 ease-linear"
+                                value={oldPassword}
+                                onChange={(e) => setOldPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="absolute right-3 top-3 text-gray-400"
+                                onClick={() => setShowOldPassword(!showOldPassword)}
+
+                            >
+                                {showOldPassword ? (<FontAwesomeIcon icon={faEye} className='h-4 w-4 text-red-500' />) :
+                                    (<FontAwesomeIcon icon={faEyeSlash} className='h-4 w-4 text-red-500' />)}
+
+                            </button>
+                        </div>
+                        {errors.oldPassword && <p className="text-red-500 text-sm">{errors.oldPassword}</p>}
+                    </div>
 
                     <div className="form-element">
                         <label htmlFor="password" className="text-gray-700 font-medium">
@@ -146,7 +174,7 @@ const ChangePassword = () => {
                         {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                     </div>
                     <div className='form-element'>
-                        <button type="button" className='rounded-lg px-4 py-3 bg-red-500 text-white hover:bg-gradient-to-l from-red-500 to-red-700' disabled={isSubmitting}>{!isSubmitting ? "Save Changes" : "Saving"}</button>
+                        <button type="button" onClick={handleSave}className='rounded-lg px-4 py-3 bg-red-500 text-white hover:bg-gradient-to-l from-red-500 to-red-700' disabled={isSubmitting}>{!isSubmitting ? "Save Changes" : "Saving"}</button>
                     </div>
 
                 </div>

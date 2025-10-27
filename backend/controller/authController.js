@@ -143,11 +143,36 @@ const updateHealthInfo = async (req, res) => {
         if (!updatedInfo)
             return res.status(404).json({ message: "Healthinfo not found" });
 
-        res.status(200).json({healthInfo:updatedInfo});
+        res.status(200).json({ healthInfo: updatedInfo });
     } catch (err) {
         console.error('Error updating healthinfo', err);
         res.status(500).json({ message: 'Server error' });
     }
 }
+const changePassword = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const data = req.body;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-export { register, login, logout, generateAccessToken, generateRefreshToken, updatePersonalInfo, updateHealthInfo };
+        const match = await bcrypt.compare(data.oldPassword, user.password);
+        if (!match) {
+             return res.status(400).json({message : "Old password is incorrect. Please try again"})
+            
+        } 
+        const hashedPassword= await bcrypt.hash(data.password,10);
+        user.password = hashedPassword;
+        await user.save();
+            
+        return res.status(200).json({message: 'Password changed succesfully'})
+    } catch(err){
+        console.error("Password change error:", err);
+        return res.status(500).json({ message: "Server error while changing password" });
+    }
+}
+
+
+export { register, login, logout, generateAccessToken, generateRefreshToken, updatePersonalInfo, updateHealthInfo, changePassword };
