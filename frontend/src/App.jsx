@@ -55,6 +55,7 @@ function App() {
                 <Route path="request" element={<Request />} />
                 <Route path="donate" element={<Donate />} />
                 <Route path="reviews" element={<Reviews />} />
+                <Route path="history" element={<Reviews />} />
                 <Route path="about" element={<AboutUs />} />
                 <Route path="profile" element={<Profile />} />
               </Route>

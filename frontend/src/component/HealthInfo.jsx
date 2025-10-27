@@ -55,7 +55,7 @@ const HealthInfo = () => {
             setFormData({
                 total_donations: healthInfo.total_donations || '',
                 last_donation_date: formatDate(healthInfo.last_donation_date),
-                has_disease: healthInfo.has_disease || '',
+                has_disease: healthInfo.has_disease || false,
                 recently_gave_birth: formatDate(healthInfo.recently_gave_birth) || '',
                 recent_piercing_or_tattoo: healthInfo.recent_piercing_or_tattoo || '',
                 weight_kg: healthInfo.weight_kg || '',
@@ -73,7 +73,7 @@ const HealthInfo = () => {
         setFormData({
             total_donations: healthInfo.total_donations || '',
             last_donation_date: formatDate(healthInfo.last_donation_date),
-            has_disease: healthInfo.has_disease || '',
+            has_disease: healthInfo.has_disease || false,
             recently_gave_birth: formatDate(healthInfo.recently_gave_birth) || '',
             recent_piercing_or_tattoo: healthInfo.recent_piercing_or_tattoo || '',
             weight_kg: healthInfo.weight_kg || '',
@@ -97,6 +97,7 @@ const HealthInfo = () => {
         // since setFormdata is asynchronous so old formdata is saved so we use local var
         const updatedForm = {
             ...formData,
+            has_disease: Boolean(formData.has_disease),
             last_donation_date: parseInt(formData.total_donations) === 0 ? new Date("2000-01-01") : formData.last_donation_date
         };
 

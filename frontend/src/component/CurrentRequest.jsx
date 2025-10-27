@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import Chat from './Chat';
 import { useAuth } from './AuthContext';
 import Review from './Review';
+import { Link } from 'react-router';
 
 
 
@@ -88,7 +89,7 @@ const CurrentRequest = ({ existingRequest }) => {
         }
     };
 
-    
+
 
     return (
         <main>
@@ -170,7 +171,8 @@ const CurrentRequest = ({ existingRequest }) => {
                             className="border p-6 rounded-2xl shadow-xl border-red-200 text-gray-800 bg-white hover:shadow-2xl transition duration-200 mb-6"
                         >
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4 mb-4">
+                                <Link to="/home/history" state={{ userId: log.donorId }}>
+                                <div className="flex items-center gap-4 mb-4 group relative cursor-pointer">
                                     <div className="text-white font-bold text-lg rounded-full w-12 h-12 bg-blue-600 flex justify-center items-center shadow-md">
                                         {log.fullName?.split(' ').map(name => name[0].toUpperCase()).join('') || '?'}
                                     </div>
@@ -179,8 +181,12 @@ const CurrentRequest = ({ existingRequest }) => {
                                         <p className="text-sm text-gray-500">{log.email}</p>
 
                                     </div>
+                                    <span className='absolute -right-15 -bottom-6 bg-gray-700 text-white opacity-0 group-hover:opacity-100 hover:opacity-100'>
+                                        Click to see history
+                                    </span>
 
                                 </div>
+                                </Link>
 
                                 <div>
                                     <div className={`text-center font-medium px-1 lg:px-5 py-1 rounded-full text-base animate-pulse ${log.urgency === 'Critical' ? 'bg-red-500 text-white' :
@@ -235,7 +241,7 @@ const CurrentRequest = ({ existingRequest }) => {
                                     <button onClick={() => setOpenReview(true)} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
                                         Donation Completed
                                     </button>
-                                    {openReview && <Review openReview={openReview} setOpenReview={setOpenReview} logId={log._id} donor={log.donorId} recipient={user._id} name={log.fullName}/>
+                                    {openReview && <Review openReview={openReview} setOpenReview={setOpenReview} logId={log._id} donor={log.donorId} recipient={user._id} name={log.fullName} />
 
                                     }
                                 </div>

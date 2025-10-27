@@ -7,7 +7,7 @@ import { currentRequest } from "../controller/requestController.js";
 import { getVincenty,pendingNotifications,markNotification,matchedLog,updateMatchLog,acceptedLog, markLogRead } from "../controller/matchingController.js";
 import { createRequest,updateRequest } from "../controller/requestController.js";
 import { getMessages,messageRead,messageNotification } from "../controller/messageController.js";
-import { donationRecorded } from "../controller/donationController.js";
+import { donationRecorded, userhistory, userReview } from "../controller/donationController.js";
 import { getAllRequests, getAllUsers,getAllMatchLog, getAllDonationHistory,getUserById,deleteuserbyid,banuserbyid, deleterequestbyid, deletelogbyid,deletedonationbyid,test } from "../controller/adminController.js";
 
 router.post("/register", register);
@@ -41,6 +41,9 @@ router.put('/markNotification/:id',verifyToken, markNotification);
 router.put('/markLogRead/:identifier',verifyToken,markLogRead)
 
 router.post('/donationRecorded',verifyToken,donationRecorded);
+
+router.get('/getuserhistory/:id',verifyToken,userhistory);
+router.get('/getuserreviews/:id',verifyToken,userReview);
 
 // Admin Routes
 router.get('/getallusers',verifyToken,getAllUsers);

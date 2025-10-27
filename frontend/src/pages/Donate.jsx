@@ -6,6 +6,7 @@ import { MapPin, BadgeCheck, Heart } from 'lucide-react';
 import { useAuth } from '../component/AuthContext';
 import { checkEligibility } from './Home';
 import Chat from '../component/Chat';
+import { Link } from 'react-router';
 
 const Donate = () => {
   const [filterUrgency, setFilterUrgency] = useState('All');
@@ -14,7 +15,7 @@ const Donate = () => {
   const [loading, setLoading] = useState(false);
   const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
   const eligible = checkEligibility(user, healthInfo);
-  const[chatOpen,setChatOpen]=useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     const fetchMatchedLogs = async () => {
@@ -23,7 +24,7 @@ const Donate = () => {
 
         const response = await fetch('http://localhost:5000/api/matchedLog', {
           method: 'GET',
-          credentials: 'include', 
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -72,15 +73,15 @@ const Donate = () => {
     const selected = e.target.value;
     setFilterUrgency(selected);
 
-    if (selected === "All") 
+    if (selected === "All")
       setFilteredLog(matchedLog);
-    else 
+    else
       setFilteredLog(matchedLog.filter(log => log.urgency.toLowerCase() === selected.toLowerCase()));
-    
+
   };
 
-  if(isLoading)
-    return( <Loading loadingText="Fetching user..." />)
+  if (isLoading)
+    return (<Loading loadingText="Fetching user..." />)
 
 
   return (
@@ -109,7 +110,7 @@ const Donate = () => {
               </div>
             </div>
 
-           
+
             <div className={`flex items-center  text-white text-sm font-semibold px-3 py-1 rounded-full ${eligible ? "bg-green-500" : "bg-red-500"}`}>
               <BadgeCheck className="h-4 w-4 mr-1" />
               {eligible ? "Available to DOnate" : "Not Available to DOnate"}
@@ -159,17 +160,23 @@ const Donate = () => {
                   className="border p-6 rounded-2xl shadow-xl border-red-200 text-gray-800 bg-white hover:shadow-2xl transition duration-200 mb-6"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="text-white font-bold text-lg rounded-full w-12 h-12 bg-blue-600 flex justify-center items-center shadow-md">
-                        {req.fullName?.split(' ').map(name => name[0].toUpperCase()).join('') || '?'}
-                      </div>
-                      <div>
-                        <h1 className="font-semibold text-xl">{req.fullName || 'Unknown Name'}</h1>
-                        <p className="text-sm text-gray-500">{req.email}</p>
+                    <Link to="/home/history" state={{ userId: req.userId }}>
+
+                      <div className="flex items-center gap-4 mb-4 group relative cursor-pointer">
+                        <div className="text-white font-bold text-lg rounded-full w-12 h-12 bg-blue-600 flex justify-center items-center shadow-md">
+                          {req.fullName?.split(' ').map(name => name[0].toUpperCase()).join('') || '?'}
+                        </div>
+                        <div>
+                          <h1 className="font-semibold text-xl">{req.fullName || 'Unknown Name'}</h1>
+                          <p className="text-sm text-gray-500">{req.email}</p>
+
+                        </div>
+                        <span className='absolute -right-15 -bottom-6 bg-gray-700 text-white opacity-0 group-hover:opacity-100 hover:opacity-100'>
+                          Click to see history
+                        </span>
 
                       </div>
-
-                    </div>
+                    </Link>
 
                     <div>
                       <div className={`text-center font-medium px-1 lg:px-5 py-1 rounded-full text-base animate-pulse ${req.urgency === 'Critical' ? 'bg-red-500 text-white' :
@@ -228,10 +235,10 @@ const Donate = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 gap-2 font-bold">
-                        <button onClick={()=>{setChatOpen(true)}} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                        <button onClick={() => { setChatOpen(true) }} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                           Start a Conversation
                         </button>
-                        {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={req.userId} name={req.fullName} requestId={req.requestId}/>}
+                        {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={req.userId} name={req.fullName} requestId={req.requestId} />}
                       </div>
                     )}
                   </div>

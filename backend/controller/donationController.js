@@ -2,6 +2,7 @@ import DonationHistory from "../models/donationhistory.js";
 import HealthInfo from "../models/healthinfo.js";
 import MatchingLog from "../models/matchinglog.js";
 import Message from "../models/message.js";
+import User from "../models/users.js";
 
 
 const donationRecorded = async (req, res) => {
@@ -14,7 +15,7 @@ const donationRecorded = async (req, res) => {
             recipient,
             review,
             request: log.request,
-            log:logId
+            log: logId
         })
         await newDonation.save();
         await Message.deleteMany({
@@ -40,4 +41,51 @@ const donationRecorded = async (req, res) => {
     }
 };
 
-export { donationRecorded };
+const userhistory = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const user = await User.findById(id);
+        const healthinfo = await HealthInfo.findOne({ user: id });
+        const reqUser = {
+            fullName: user.fullName,
+            total_donations: healthinfo.total_donations,
+            last_donation_date: healthinfo.last_donation_date,
+            willingness_level: healthinfo.willingness_level,
+        }
+
+        res.status(200).json(reqUser);
+
+    } catch (error) {
+        console.error("Error fetching user:", err);
+        res.status(500).json({ error: "Server error" });
+
+    }
+
+}
+const userReview = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const reviewReceived = await DonationHistory.find({ donor: id })
+            .select('recipient review donatedAt')
+            .populate({
+                path: 'recipient',
+                select: 'fullName'
+            });
+        const reviewGiven = await DonationHistory.find({ recipient: id })
+            .select('donor review donatedAt')
+            .populate({
+                path: 'donor',
+                select: 'fullName'
+            });
+       
+        res.status(200).json({reviewReceived:reviewReceived, reviewGiven:reviewGiven});
+
+    } catch (error) {
+        console.error("Error fetching data", err);
+        res.status(500).json({ error: "Server error" });
+
+    }
+
+}
+
+export { donationRecorded, userhistory,userReview };
