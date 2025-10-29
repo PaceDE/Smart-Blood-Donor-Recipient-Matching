@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import logo from "../assets/bloodlink-logo.svg"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -92,7 +92,7 @@ function Login() {
 
       </div>
 
-      <div className='w-[50%] px-10 mx-auto'>
+      <div className=' w-[90%] md:w-[70%] lg:w-[50%] px-10 mx-auto'>
         <div className='rounded-lg mt-6 border border-gray-200 shadow-md'>
           <div className=" text-white w-full p-5 px-7 rounded-t-lg bg-gradient-to-r from-red-500 to-red-600">
             <div className="flex items-center gap-x-5">
@@ -168,6 +168,11 @@ function Login() {
               </div>
 
             </form>
+            <div className='mt-2 pl-4'>
+              <Link to='/forgotpassword' className='underline text-gray-500'>
+               Forgot Password? 
+              </Link>
+            </div>
 
           </div>
         </div>

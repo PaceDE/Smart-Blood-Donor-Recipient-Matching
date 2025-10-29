@@ -28,6 +28,7 @@ import DonationManagement from "./pages/admin/DonationManagement";
 import UserDetail from "./pages/admin/UserDetail";
 import RequestDetail from "./pages/admin/RequestDetail";
 import MatchingDetail from "./pages/admin/MatchingDetail";
+import ForgotPassword from "./pages/ForgotPassword";
 function App() {
   return (
     <AppTrackingProvider>
@@ -41,6 +42,7 @@ function App() {
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
                 <Route path="next-step" element={<SecondStage />} />
+                <Route path="forgotpassword" element={<ForgotPassword />} />
               </Route>
 
               <Route

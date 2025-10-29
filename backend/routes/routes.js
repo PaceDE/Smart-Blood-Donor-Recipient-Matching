@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { register,login,logout, updatePersonalInfo,updateHealthInfo,changePassword } from "../controller/authController.js";
+import { register,login,logout, updatePersonalInfo,updateHealthInfo,changePassword, forgotPassword} from "../controller/authController.js";
 import { verifyToken,fetchUser } from "../controller/authMiddleware.js";
 import { getAppTrackingStats } from "../controller/trackingController.js";
 import { currentRequest } from "../controller/requestController.js";
@@ -65,6 +65,10 @@ router.delete('/deleterequestbyid/:id',verifyToken,deleterequestbyid);
 router.delete('/deletelogbyid/:id',verifyToken,deletelogbyid);
 
 router.delete('/deletedonationbyid/:id',verifyToken,deletedonationbyid);
+
+router.post('/forgotpassword',forgotPassword);
 router.put('/test',test)
+
+
 export { router };
 

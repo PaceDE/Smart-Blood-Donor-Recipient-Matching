@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
   ban:{
     type:Boolean,
     default:false
+  },
+  forgotPassword:{
+    type:Boolean,
+    default: false
   }
 }, { timestamps: true });
 

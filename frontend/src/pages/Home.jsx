@@ -7,6 +7,8 @@ import DoughnutChart from '../component/DoughnutChart';
 import Loading from '../component/Loading';
 import AppTracking from '../component/AppTracking';
 import BarChart from '../component/BarChart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 const checkEligibility = (user, healthInfo) => {
   if (!user || !healthInfo) return false;
@@ -72,6 +74,15 @@ export default function Home() {
     <div className="flex flex-col">
       <TopBar heading={`BloodLink ${user.role == "admin" ? "Admin" : ""} Dashboard`} text={`Welcome back, manage your donations and requests ${user.fullName}`} />
       <main className="flex-1 p-6">
+
+        {user.forgotPassword && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 flex items-center gap-3 rounded-md mb-5">
+            <FontAwesomeIcon icon={faTriangleExclamation} className="text-yellow-800" />
+            <span className="font-medium">
+              You recently requested a password reset. Please change your password soon.
+            </span>
+          </div>
+        )}
 
         {/* App Tracking Stats*/}
         <AppTracking />

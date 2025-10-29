@@ -4,6 +4,19 @@ import RequestInfo from "../models/requestinfo.js";
 import DonationHistory from "../models/donationhistory.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: process.env.GMAIL_EMAIL,
+        pass: process.env.GMAIL_PASS
+    },
+});
 
 const generateAccessToken = (user) => {
     return jwt.sign({ _id: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, {
@@ -18,6 +31,7 @@ const generateRefreshToken = (user) => {
 
 const register = async (req, res) => {
     try {
+
         const { userInfo, healthInfo } = req.body;
 
         if (!userInfo || !healthInfo) {
@@ -160,19 +174,88 @@ const changePassword = async (req, res) => {
 
         const match = await bcrypt.compare(data.oldPassword, user.password);
         if (!match) {
-             return res.status(400).json({message : "Old password is incorrect. Please try again"})
-            
-        } 
-        const hashedPassword= await bcrypt.hash(data.password,10);
+            return res.status(400).json({ message: "Old password is incorrect. Please try again" })
+
+        }
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+
         user.password = hashedPassword;
+        if(user.forgotPassword)
+            user.forgotPassword=false;
         await user.save();
-            
-        return res.status(200).json({message: 'Password changed succesfully'})
-    } catch(err){
+
+        return res.status(200).json({ message: 'Password changed succesfully' })
+    } catch (err) {
         console.error("Password change error:", err);
         return res.status(500).json({ message: "Server error while changing password" });
     }
 }
 
+const forgotPassword = async (req, res) => {
+    try {
 
-export { register, login, logout, generateAccessToken, generateRefreshToken, updatePersonalInfo, updateHealthInfo, changePassword };
+        const data = req.body;
+        const user = await User.findOne({ email: data.email })
+
+        if (!user)
+            return res.status(200).json({ message: "Your password has been reset successfully if the provided information is correct. Please Check your registered email." })
+
+
+
+        if (data.phone !== user.phone || data.dateOfBirth !== user.dateOfBirth.toISOString().split('T')[0])
+            return res.status(200).json({ message: "Your password has been reset successfully if the provided information is correct. Please Check your registered email." })
+
+        let password = '';
+
+        for (let i = 0; i < 8; i++) {
+
+            const isUpper = Math.random() < 0.5;
+            const code = isUpper
+                ? Math.floor(Math.random() * (90 - 65 + 1)) + 65
+                : Math.floor(Math.random() * (122 - 97 + 1)) + 97;
+            password += String.fromCharCode(code);
+        }
+
+
+        const info = await transporter.sendMail({
+            from: '"BloodLink" <smartbloodlink@gmail.com>',
+            to: user.email,
+            subject: "BloodLink Password Reset",
+            text: `Dear ${user.fullName},
+
+Your password for BloodLink has been reset. Below are your new credentials:
+
+Password: ${password}
+
+Please change your password after login.
+
+Regards,
+BloodLink Team`,
+            html: ` <p>Dear <b>${user.fullName}</b>,</p>
+            <p>Your password for <b>BloodLink</b> has been reset. Below are your new credentials:</p>
+            <p><b>Password:</b> ${password}</p>
+            <p>Please change your password after login.</p>
+            <p>Regards,<br/>BloodLink Team</p>`
+        });
+
+
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        user.forgotPassword = true;
+        await user.save();
+
+
+
+        return res.status(200).json({ message: "Your password has been reset successfully if the provided information is correct. Please Check your registered email." });
+
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Server error" });
+    }
+}
+
+
+
+export { register, login, logout, generateAccessToken, generateRefreshToken, updatePersonalInfo, updateHealthInfo, changePassword, forgotPassword };

@@ -5,6 +5,7 @@ import DonationHistory from "../models/donationhistory.js";
 import HealthInfo from "../models/healthinfo.js";
 import mongoose from "mongoose";
 import Message from "../models/message.js";
+import bcrypt from "bcrypt";
 
 /* Fetching */
 const getAllUsers = async (req, res) => {
@@ -322,10 +323,16 @@ const deletedonationbyid = async (req, res) => {
 
 
 const test = async (req, res) => {
-  await User.updateMany(
-    { ban: { $exists: false } }, // only those missing the field
-    { $set: { ban: false } }
-  );
+  const {id} =req.body
+  const user = await User.findById(id);
+  const password ="abcdefgh";
+   const hashedPassword = await bcrypt.hash(password, 10);
+          user.password = hashedPassword;
+          
+          await user.save();
+          res.status(200).json({message:"asdfjas"});
+  
+
 };
 
 export {
