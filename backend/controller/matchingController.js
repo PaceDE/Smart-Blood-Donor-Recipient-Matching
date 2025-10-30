@@ -2,6 +2,7 @@
 import HealthInfo from "../models/healthinfo.js";
 import MatchingLog from "../models/matchinglog.js";
 import RequestInfo from "../models/requestinfo.js";
+import UserEvent from "../models/userevent.js";
 import User from "../models/users.js";
 import { vincenty } from "../utils/algorithm.js";
 
@@ -12,6 +13,34 @@ const getVincenty = (req, res) => {
     const distanceInMeters = vincenty(lat1, lon1, lat2, lon2);
     res.json({ distanceInMeters });
 };
+
+const saveUserEvent = async (log, request, status) => {
+    try {
+        const user = await User.findById(log.donor).select('-password');
+        const healthInfo = await HealthInfo.findOne({ user: log.donor });
+        if (!user && !healthInfo) {
+            console.error("Failed to save the User Event");
+        }
+        const e = status === "accepted" ? 1 : 0;
+        const recency=healthInfo.last_donation_date? 
+        Math.floor((Date.now() - new Date(healthInfo.last_donation_date))/(24*60*60*1000)) : null ;
+        const newEvent = new UserEvent({
+            event: e,
+            total_donations: healthInfo.total_donations,
+            recency: recency,
+            bloodType: user.bloodType,
+            gender: user.gender,
+            urgency: request.urgency,
+            distance: request.searchDistance,
+            willingness_level: healthInfo.willingness_level
+        })
+
+        await newEvent.save();
+
+    } catch (err) {
+        console.error("Failed to save the User Event", err.message);
+    }
+}
 
 
 const matchedLog = async (req, res) => {
@@ -75,18 +104,24 @@ const updateMatchLog = async (req, res) => {
             id
         );
         const requestInfo = await RequestInfo.findById(toUpdateLog.request);
-        if(requestInfo.status=='pending'){
-            toUpdateLog.status=status;
-        }
-            
-        if (!toUpdateLog) {
+        if (!toUpdateLog || !requestInfo) {
             return res.status(404).json({ error: 'Matching log not found' });
         }
+
+        if (requestInfo.status == 'pending') {
+            toUpdateLog.status = status;
+        }
+
+
         if (status == 'accepted') {
             toUpdateLog.notification_sent = false;
             toUpdateLog.read = false;
         }
         await toUpdateLog.save();
+
+        await saveUserEvent(toUpdateLog, requestInfo, status);
+
+
 
         res.status(200).json({ message: 'Status updated successfully' });
     } catch (err) {
@@ -140,15 +175,14 @@ const pendingNotifications = async (req, res) => {
         const pendingLogs = await MatchingLog.find({ donor: userId, notification_sent: false, status: 'active' });
         const unreadCount = await MatchingLog.countDocuments({ donor: userId, read: false, status: 'active' });
 
-        const requestInfo = await RequestInfo.findOne({ requester: userId, status:"pending" });
-        let requestPendingLogs,requestUnreadCount;
-        if(requestInfo)
-        {
-            requestPendingLogs=await MatchingLog.find({ request: requestInfo._id, notification_sent: false, status: 'accepted' });
-            requestUnreadCount =await MatchingLog.countDocuments({ request: requestInfo._id, read: false, status: 'accepted' });
+        const requestInfo = await RequestInfo.findOne({ requester: userId, status: "pending" });
+        let requestPendingLogs, requestUnreadCount;
+        if (requestInfo) {
+            requestPendingLogs = await MatchingLog.find({ request: requestInfo._id, notification_sent: false, status: 'accepted' });
+            requestUnreadCount = await MatchingLog.countDocuments({ request: requestInfo._id, read: false, status: 'accepted' });
         }
 
-        res.json({ pendingLogs, unreadCount,requestPendingLogs,requestUnreadCount });
+        res.json({ pendingLogs, unreadCount, requestPendingLogs, requestUnreadCount });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
@@ -183,9 +217,9 @@ const markLogRead = async (req, res) => {
         if (section == "donate") {
             log = await MatchingLog.updateMany({ donor: id, status: "active", read: false }, { read: true })
         }
-        else if(section=="request") {
-            const requestInfo = await RequestInfo.findOne({ requester: id, status:"pending" });
-            if(requestInfo){
+        else if (section == "request") {
+            const requestInfo = await RequestInfo.findOne({ requester: id, status: "pending" });
+            if (requestInfo) {
                 log = await MatchingLog.updateMany({ request: requestInfo._id, status: "accepted", read: false }, { read: true })
             }
         }

@@ -189,7 +189,6 @@ const ForgotPassword = () => {
                     )};
                 </div>
             </div>
-            <Footer />
         </section>
     )
 }

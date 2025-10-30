@@ -6,6 +6,10 @@ import HealthInfo from "../models/healthinfo.js";
 import mongoose from "mongoose";
 import Message from "../models/message.js";
 import bcrypt from "bcrypt";
+import UserEvent from "../models/userevent.js";
+import fs from "fs";
+import {AsyncParser} from "@json2csv/node";
+
 
 /* Fetching */
 const getAllUsers = async (req, res) => {
@@ -73,7 +77,7 @@ const getAllDonationHistory = async (req, res) => {
       })
       .populate({
         path: "request",
-        populate: {path:'requester',select:'-password'}
+        populate: { path: 'requester', select: '-password' }
       })
       .populate({
         path: "log",
@@ -319,19 +323,80 @@ const deletedonationbyid = async (req, res) => {
   }
 };
 
+const getAllEventData = async (req, res) => {
+  try {
+    const datas = await UserEvent.find();
+    res.status(200).json(datas);
+  } catch (err) {
+    console.error("Error fetching ", err);
+    res.status(500).json({ message: "Failed to fetch User Interaction datas", error: err.message });
+  }
+}
+
+const exportCSV =async(req,res) =>{
+  try {
+    const f1="../ml_model/MLData"+Date.now()+".csv"
+    const f2="../ml_model/MLData.csv";
+    
+    const ip=Number(req.params.id);
+    if(!ip)
+      return res.status(400).json({message:"Bad request"})
+    const datas=await UserEvent.find().lean()
+   
+    if(datas.length===0)
+      return res.status(200).json({message:"No data found to export"});
+    
+    const parser= new AsyncParser();
+    const csv = await parser.parse(datas).promise();
+
+    if(ip===1){
+      fs.writeFileSync(f1, csv);
+    }
+    else{
+      if(fs.existsSync(f2)){
+
+        let f=csv.split("\n");
+        f.shift();
+        const dataToAppend= "\n"+f.join("\n");
+        fs.appendFileSync(f2,dataToAppend);
+      }
+      else
+        fs.writeFileSync(f2, csv);   
+    }
+
+    res.status(200).json({message:"Succesfully exported file"});
+
+  } catch (err) {
+    console.error("Error exporting ", err);
+    res.status(500).json({ message: "Failed to Export csv", error: err.message });
+  }
+}
+
+const deleteEventdata =async(req,res)=>{
+   try {
+    await UserEvent.deleteMany()
+    res.status(200).json({message:"Succesfully deleted"});
+
+  } catch (err) {
+    console.error("Error deleting ", err);
+    res.status(500).json({ message: "Failed to delete data", error: err.message });
+  }
+
+}
+
 
 
 
 const test = async (req, res) => {
-  const {id} =req.body
+  const { id } = req.body
   const user = await User.findById(id);
-  const password ="abcdefgh";
-   const hashedPassword = await bcrypt.hash(password, 10);
-          user.password = hashedPassword;
-          
-          await user.save();
-          res.status(200).json({message:"asdfjas"});
-  
+  const password = "abcdefgh";
+  const hashedPassword = await bcrypt.hash(password, 10);
+  user.password = hashedPassword;
+
+  await user.save();
+  res.status(200).json({ message: "asdfjas" });
+
 
 };
 
@@ -346,5 +411,8 @@ export {
   banuserbyid,
   deleterequestbyid,
   deletelogbyid,
-  deletedonationbyid
+  deletedonationbyid,
+  getAllEventData,
+  exportCSV,
+  deleteEventdata
 };

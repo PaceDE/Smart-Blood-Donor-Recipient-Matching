@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import addNotification from 'react-push-notification';
 import { useSocket } from './SocketContext';
 import { useAuth } from './AuthContext';
+import Footer from './Footer';
 
 function SidebarLayout() {
   const { messages, setMessages } = useSocket();
@@ -146,12 +147,15 @@ function SidebarLayout() {
   }, []);
 
   return (
+    <>
     <div className="flex h-screen">
       <Sidebar donateSectionUnread={donateSectionUnread} setDonateSectionUnread={setDonateSectionUnread} requestSectionUnread={requestSectionUnread} setRequestSectionUnread={setRequestSectionUnread}/>
       <main className="flex-1 overflow-y-auto bg-[#f9fafb]">
         <Outlet />
       </main>
     </div>
+    
+    </>
   );
 }
 

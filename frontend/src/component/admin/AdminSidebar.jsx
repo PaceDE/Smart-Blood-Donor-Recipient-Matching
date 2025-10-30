@@ -19,6 +19,7 @@ const menuItems = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: faHome },
   { path: '/admin/matchlogmanagement', label: 'MatchLog', icon: faComment },
    { path: '/admin/donationmanagement', label: 'Donation', icon: faComment },
+   { path: '/admin/eventdata', label: 'ML Data', icon: faComment },
 ];
 
 const AdminSidebar = () => {

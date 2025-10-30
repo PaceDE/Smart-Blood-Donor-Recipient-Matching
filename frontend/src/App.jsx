@@ -29,6 +29,7 @@ import UserDetail from "./pages/admin/UserDetail";
 import RequestDetail from "./pages/admin/RequestDetail";
 import MatchingDetail from "./pages/admin/MatchingDetail";
 import ForgotPassword from "./pages/ForgotPassword";
+import EventData from "./pages/admin/EventData";
 function App() {
   return (
     <AppTrackingProvider>
@@ -77,6 +78,7 @@ function App() {
                 <Route path="userdetail" element={<UserDetail />} /> 
                 <Route path="requestdetail" element={<RequestDetail />} />
                 <Route path="matchinglogdetail" element={<MatchingDetail />} />
+                <Route path="eventdata" element={<EventData />} />
                 <Route path="profile" element={<Profile />} />   
               </Route>
 

@@ -1,42 +1,33 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner, faDroplet, faSuitcaseMedical } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
 import {
   Heart,
   Users,
   MapPin,
-  Shield,
   Clock,
-  Award,
   ArrowRight,
   Play,
   CheckCircle,
-  Star,
-  Phone,
-  AlertCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Footer from "../component/Footer";
+import { useAppTracking } from "../component/AppTrackingContext";
 
-// Dummy features
+
 const features = [
   {
     icon: Users,
     title: "Smart Matching",
     description:
-      "AI-powered algorithm matches donors with recipients based on blood type, location, and urgency.",
+      "AI-powered algorithm matches donors with recipients based on blood type, location, and history.",
   },
   {
     icon: MapPin,
     title: "Location-Based",
     description:
-      "Find donors and recipients in your area with real-time location tracking and mapping.",
-  },
-  {
-    icon: Shield,
-    title: "Secure & Private",
-    description:
-      "Your medical information is encrypted and protected with industry-standard security measures.",
+      "Find donors near your area.",
   },
   {
     icon: Clock,
@@ -46,135 +37,71 @@ const features = [
   },
 ];
 
-const testimonials = [
+const steps = [
   {
-    name: "Sarah Johnson",
-    role: "Blood Donor",
-    content:
-      "This app made it so easy to donate blood and help people in my community. The matching system is incredible!",
-    rating: 5,
-    avatar: "SJ",
+    step: "01",
+    title: "Register & Verify",
+    description:
+      "Create your profile with medical information and location details",
+    icon: Users,
   },
   {
-    name: "Dr. Michael Chen",
-    role: "Hospital Administrator",
-    content:
-      "We've seen a 40% increase in successful blood matches since using this platform. It's revolutionizing healthcare.",
-    rating: 5,
-    avatar: "MC",
+    step: "02",
+    title: "Get Matched",
+    description:
+      "Our algorithm finds compatible donors for the blood requests",
+    icon: Heart,
   },
   {
-    name: "Emily Rodriguez",
-    role: "Recipient Family",
-    content:
-      "When my daughter needed blood urgently, this app connected us with donors within hours. Forever grateful!",
-    rating: 5,
-    avatar: "ER",
+    step: "03",
+    title: "Save Lives",
+    description:
+      "Connect, coordinate, and complete the life-saving donation process",
+    icon: CheckCircle,
   },
-];
+]
 
-// Components
-const Badge = ({ children, className = "" }) => (
-  <span
-    className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${className}`}
-  >
-    {children}
-  </span>
-);
 
-const Button = ({
-  children,
-  className = "",
-  variant = "solid",
-  size = "md",
-  onClick,
-  ...props
-}) => {
-  const baseClasses =
-    "inline-flex items-center justify-center rounded-md font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
-
-  const variantClasses =
-    variant === "outline"
-      ? "border border-current bg-transparent hover:bg-gray-100"
-      : variant === "ghost"
-      ? "bg-transparent hover:bg-gray-100"
-      : "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700";
-
-  const sizeClasses =
-    size === "lg"
-      ? "px-8 py-4 text-lg"
-      : size === "sm"
-      ? "px-3 py-1 text-sm"
-      : "px-4 py-2";
-
-  return (
-    <button
-      className={`${baseClasses} ${variantClasses} ${sizeClasses} ${className}`}
-      onClick={onClick}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
-const Card = ({ children, className = "" }) => (
-  <div className={`bg-white rounded-lg shadow-md ${className}`}>{children}</div>
-);
-const CardHeader = ({ children, className = "" }) => (
-  <div className={`px-6 py-4 ${className}`}>{children}</div>
-);
-const CardContent = ({ children, className = "" }) => (
-  <div className={`px-6 pb-4 ${className}`}>{children}</div>
-);
-const CardTitle = ({ children, className = "" }) => (
-  <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>
-);
-const CardDescription = ({ children, className = "" }) => (
-  <p className={`text-sm text-gray-600 ${className}`}>{children}</p>
-);
 
 export default function Welcome() {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [stats, setStats] = useState([
-    { label: "Lives Saved", value: "Loading...", icon: Heart },
-    { label: "Active Donors", value: "Loading...", icon: Users },
-   
-    { label: "Success Rate", value: "Loading...", icon: Award },
-  ]);
+  const location = useLocation();
+  const { stats, loading } = useAppTracking();
+  const statistics = [
+    {
+      icon: faUser, value: stats?.totalUsers || 0, label: "Total registered users"
+    },
+    {
+      icon: faDroplet, value: stats?.totalRequests || 0, label: "Total Requests"
+    },
+    {
+      icon: faSuitcaseMedical, value: stats?.totalDonations || 0, label: "Total Donations made"
+    }
+  ]
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStats([
-        { label: "Lives Saved", value: "15,420", icon: Heart },
-        { label: "Active Donors", value: "8,350", icon: Users },
-        
-        { label: "Success Rate", value: "98%", icon: Award },
-      ]);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+    if (location.hash) {
+      const elementId = location.hash.slice(1);
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (location.hash === "#watch-demo" || location.hash === "#become-a-member")
+          element.focus();
+      }
+    }
+  }, [location])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-red-50 via-white to-gray-50 py-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 gap-12 items-center">
             <div className="space-y-8 text-center lg:text-left max-w-4xl mx-auto">
               <div className="space-y-4">
-                <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold hover:bg-red-100">
                   🩸 Saving Lives Through Technology
-                </Badge>
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                </span>
+                <h1 className="mt-10 text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                   Connect{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600">
                     Donors
@@ -190,101 +117,67 @@ export default function Welcome() {
                   real-time, saving lives when every second counts.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div id="stats" className="flex flex-col sm:flex-row gap-4 lg:justify-start">
                 <Link to="/register">
-                  <Button
-                    size="lg"
-                    className="text-lg px-8 py-6 h-auto"
-                  >
+                  <button className="text-lg px-8 py-6 h-auto flex items-center justify-center bg-red-500 text-white rounded-md font-semibold">
                     <Heart className="mr-2 h-5 w-5" />
                     Start Donating
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
+                  </button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-8 py-6 h-auto border-gray-300"
-                >
-                  <Play className="mr-2 h-5 w-5" />
-                  Watch Demo
-                </Button>
+                <a href="https://youtu.be/AlnHNi0hdO0?si=-X_fJu90NwO9qxd2" target="_blank">
+                  <button tabIndex={-1} id="watch-demo" className="scroll-mt-64 flex items-center justify-center text-lg px-8 py-6 h-auto border-2 border-gray-300 rounded-md font-semibold focus:border-red-500">
+                    <Play className="mr-2 h-5 w-5" />
+                    Watch Demo
+                    <ArrowRight className="ml-5 h-5 w-5" />
+                  </button>
+                </a>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 justify-center">
-                {stats.map((stat, index) => (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-20 pt-8 justify-center">
+                {statistics.map((stat, index) => (
                   <div key={index} className="text-center">
                     <div className="flex justify-center mb-2">
-                      <stat.icon className="h-8 w-8 text-red-500" />
+                      <FontAwesomeIcon icon={stat.icon} className="text-4xl text-red-500" />
                     </div>
-                    <div
-                      className={`text-2xl font-bold ${
-                        stat.value === "Loading..."
-                          ? "text-gray-400 animate-pulse"
-                          : "text-gray-900"
-                      }`}
-                    >
-                      {stat.value}
+                    <div className={`text-2xl font-bold`}>
+                      {!loading ? (
+                        `${stat.value}`
+                      ) : (
+                        <FontAwesomeIcon spin icon={faSpinner} className="text-gray-600" />
+
+                      )}
                     </div>
                     <div className="text-sm text-gray-600">{stat.label}</div>
                   </div>
+
                 ))}
               </div>
             </div>
           </div>
         </div>
       </section>
- <section className="w-full  bg-gradient-to-r from-red-50 to-pink-50 py-12 px-4 md:px-12">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8">
+
+      <section className="w-full  bg-red-100 pt-4 md:pt-0 px-4 md:px-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center">
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#660033] mb-4 leading-tight">
-              TO GIVE IS <br className="hidden sm:block" /> HUMAN
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#660033] mb-4">
+              TO GIVE IS <br className="hidden sm:display" /> HUMAN
             </h1>
             <p className="text-lg md:text-xl text-[#660033] mb-6 max-w-lg">
-             Give Blood ,Save Lives <br/>
-                  Donate Blood be a hero
+              Give Blood ,Save Lives <br />
+              Donate Blood be a hero
             </p>
-            
+
           </div>
 
-          <div className="flex-1 relative">
+          <div className="flex relative bg">
             <img
-              src="/images/hero-image-1.png"
-              alt="Happy child blood donation"
-              className="w-full max-w-md md:max-w-full mx-auto object-cover rounded-xl "
+              src="/images/Photo4.png"
+              alt="Blood donation"
+              className="max-w-md md:max-w-full object-cover"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* Emergency Alert Banner */}
-      <section className="bg-red-600 text-white py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <AlertCircle className="h-6 w-6 animate-pulse" />
-              <span className="font-semibold">
-                Emergency Blood Needed: O- Type in Downtown Hospital
-              </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white text-white hover:bg-white hover:text-red-600"
-              >
-                <Phone className="mr-2 h-4 w-4" />
-                Call Now
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white text-white hover:bg-white hover:text-red-600"
-              >
-                Respond
-              </Button>
-            </div>
           </div>
         </div>
       </section>
@@ -301,33 +194,33 @@ export default function Welcome() {
               efficient blood donation network
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card
+              <div
                 key={index}
-                className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                className="card bg-white rounded-lg border-0 shadow-lg hover:shadow-xl transition-shadow duration-300"
               >
-                <CardHeader className="text-center pb-4">
+                <div className="card-header text-center px-6 py-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <feature.icon className="h-8 w-8 text-white" />
                   </div>
-                  <CardTitle className="text-xl text-gray-900">
+                  <h3 className="card-title text-xl font-semibold text-gray-900">
                     {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <CardDescription className="text-gray-600 leading-relaxed">
+                  </h3>
+                </div>
+                <div className="px-6 pb-4 text-center">
+                  <p className="card-description text-sm text-gray-600">
                     {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-gray-50">
+      <section id="how-it-works" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -336,29 +229,7 @@ export default function Welcome() {
             <p className="text-xl text-gray-600">Simple steps to save lives</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                title: "Register & Verify",
-                description:
-                  "Create your profile with medical information and location details",
-                icon: Users,
-              },
-              {
-                step: "02",
-                title: "Get Matched",
-                description:
-                  "Our AI algorithm finds compatible donors or recipients near you",
-                icon: Heart,
-              },
-              {
-                step: "03",
-                title: "Save Lives",
-                description:
-                  "Connect, coordinate, and complete the life-saving donation process",
-                icon: CheckCircle,
-              },
-            ].map((step, index) => (
+            {steps.map((step, index) => (
               <div key={index} className="relative">
                 <div className="text-center">
                   <div className="relative inline-block mb-6">
@@ -389,65 +260,6 @@ export default function Welcome() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              What Our Community Says
-            </h2>
-            <p className="text-xl text-gray-600">
-              Real stories from donors and recipients
-            </p>
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <Card className="border-0 shadow-xl">
-              <CardContent className="p-8 text-center">
-                <div className="flex justify-center mb-4">
-                  {[...Array(testimonials[currentTestimonial].rating)].map(
-                    (_, i) => (
-                      <Star
-                        key={i}
-                        className="h-6 w-6 text-yellow-400 fill-current"
-                      />
-                    )
-                  )}
-                </div>
-                <blockquote className="text-2xl text-gray-900 mb-6 leading-relaxed">
-                  "{testimonials[currentTestimonial].content}"
-                </blockquote>
-                <div className="flex items-center justify-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">
-                      {testimonials[currentTestimonial].avatar}
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-bold text-gray-900">
-                      {testimonials[currentTestimonial].name}
-                    </div>
-                    <div className="text-gray-600">
-                      {testimonials[currentTestimonial].role}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <div className="flex justify-center mt-8 space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentTestimonial ? "bg-red-500" : "bg-gray-300"
-                  }`}
-                  onClick={() => setCurrentTestimonial(index)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-red-500 to-red-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -460,27 +272,16 @@ export default function Welcome() {
               difference in their communities every day.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-white text-red-600 hover:bg-gray-100 text-lg px-8 py-6 h-auto font-semibold"
-              >
-                <Heart className="mr-2 h-5 w-5" />
-                Become a Donor
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-red-600 text-lg px-8 py-6 h-auto font-semibold"
-              >
-                Request Blood
-              </Button>
+              <Link to="/register">
+                <button tabIndex={-1} id="become-a-member" className="scroll-mt-64 bg-white/20 flex items-center justify-center text-white border-2 border-transparent focus:border-white hover:bg-red-500 text-lg px-8 py-6 h-auto font-semibold">
+                  Become a member
+                </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer/>
     </div>
   );
 }

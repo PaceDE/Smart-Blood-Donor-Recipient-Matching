@@ -8,7 +8,7 @@ import { getVincenty,pendingNotifications,markNotification,matchedLog,updateMatc
 import { createRequest,updateRequest } from "../controller/requestController.js";
 import { getMessages,messageRead,messageNotification } from "../controller/messageController.js";
 import { donationRecorded, userhistory, userReview } from "../controller/donationController.js";
-import { getAllRequests, getAllUsers,getAllMatchLog, getAllDonationHistory,getUserById,deleteuserbyid,banuserbyid, deleterequestbyid, deletelogbyid,deletedonationbyid,test } from "../controller/adminController.js";
+import { getAllRequests, getAllUsers,getAllMatchLog, getAllDonationHistory,getUserById,deleteuserbyid,banuserbyid, deleterequestbyid, deletelogbyid,deletedonationbyid,test, getAllEventData, exportCSV, deleteEventdata } from "../controller/adminController.js";
 
 router.post("/register", register);
 router.get('/auth-check',verifyToken, fetchUser);
@@ -67,7 +67,14 @@ router.delete('/deletelogbyid/:id',verifyToken,deletelogbyid);
 router.delete('/deletedonationbyid/:id',verifyToken,deletedonationbyid);
 
 router.post('/forgotpassword',forgotPassword);
+
+router.get('/getalleventData',verifyToken,getAllEventData);
+
+router.post('/exportCSV/:id',verifyToken,exportCSV)
+
+router.delete('/deleteeventdata',verifyToken,deleteEventdata);
 router.put('/test',test)
+
 
 
 export { router };
