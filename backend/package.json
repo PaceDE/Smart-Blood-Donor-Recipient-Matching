@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@json2csv/node": "^7.0.6",
+    "all": "^0.0.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
