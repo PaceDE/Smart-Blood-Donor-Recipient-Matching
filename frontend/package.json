@@ -17,6 +17,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@tailwindcss/vite": "^4.1.10",
     "@types/leaflet": "^1.9.18",
+    "all": "^0.0.0",
     "chart.js": "^4.5.0",
     "color": "^5.0.0",
     "leaflet": "^1.9.4",
