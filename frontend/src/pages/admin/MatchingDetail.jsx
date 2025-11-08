@@ -190,6 +190,29 @@ function MatchingDetail() {
                   </div>
                 </div>
 
+                 {/* Willingness Probability */}
+                <div className="form-element">
+                  <label
+                    htmlFor="probability"
+                    className="text-gray-700 font-medium"
+                  >
+                    Willingness Probability *
+                  </label>
+                  <div className="relative mt-2">
+                    <FontAwesomeIcon
+                      icon={faName}
+                      className="absolute left-3 top-4 text-gray-400"
+                    />
+                    <input
+                      id="probability"
+                      type="text"
+                      className="pl-10 rounded-md w-full h-12 border border-gray-300"
+                      value={log.probability}
+                      readOnly
+                    />
+                  </div>
+                </div>
+
                 {/* Donor Distance */}
                 <div className="form-element">
                   <label

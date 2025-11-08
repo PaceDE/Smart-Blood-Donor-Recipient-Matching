@@ -43,7 +43,11 @@ export default function Register() {
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
+        let newValue = value
+        if (id==="phone"){
+            newValue=newValue.replace(/\D/g,"").slice(0,10)
+        }
+        setFormData(prev => ({ ...prev, [id]: newValue }));
     };
 
     const handleNext = () => {
@@ -66,6 +70,7 @@ export default function Register() {
     const validateForm = () => {
         const newErrors = {};
 
+        if (formData.fullName.trim().split(" ").length<2) newErrors.fullName = "Enter Full name";
         if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
         if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
         if (!formData.bloodType) newErrors.bloodType = "Blood type is required";

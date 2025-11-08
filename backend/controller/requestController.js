@@ -1,7 +1,7 @@
 
 import HealthInfo from "../models/healthinfo.js";
 import RequestInfo from "../models/requestinfo.js";
-import { vincenty,isEligibleDonor,predict } from "../utils/algorithm.js";
+import { vincenty, isEligibleDonor, predict } from "../utils/algorithm.js";
 import MatchingLog from "../models/matchinglog.js";
 import Message from "../models/message.js";
 
@@ -22,7 +22,7 @@ const currentRequest = async (req, res) => {
         requester: req.user._id,
         status: 'pending'
     })
-   
+
     res.json(request || null);
 }
 
@@ -34,7 +34,7 @@ const createRequest = async (req, res) => {
         if (!requestInfo) {
             return res.status(400).json({ message: "Missing data" });
         }
-        
+
         const bloodType = requestInfo.bloodType;
         const requesterId = req.user._id;
         const compatibleTypes = bloodCompatibility[bloodType];
@@ -43,7 +43,7 @@ const createRequest = async (req, res) => {
         const matched = await HealthInfo.find().populate({
             path: 'user',
             match: {
-                bloodType: {$in : compatibleTypes},
+                bloodType: { $in: compatibleTypes },
                 _id: { $ne: requesterId }
             },
             select: '-password'
@@ -53,29 +53,31 @@ const createRequest = async (req, res) => {
         const today = new Date();
         const eligibleDonors = validMatches.filter(h => isEligibleDonor(h, today));
         let willingDonors;
-        if(id==1)
-        {
-            willingDonors= eligibleDonors.filter(d => predict(d.total_donations, d.last_donation_date,d.willingness_level));
+
+        willingDonors = eligibleDonors.map(d => {
+            const [prob, threshold ]= predict(d.total_donations, d.last_donation_date, d.willingness_level);
+            return { donor: d, probability: Number(prob.toFixed(2)), threshold: Number(threshold) }
+        })
+        if (id == 1) {
+
+            willingDonors = willingDonors.filter(e => e.probability >= e.threshold)
         }
-        else
-        {
-            willingDonors = eligibleDonors;
-        }
+
         const nearbyDonors = willingDonors
-            .map(donor => {
+            .map(entry => {
                 const distance = vincenty(
                     requestInfo.latitude,
                     requestInfo.longitude,
-                    donor.user.latitude,
-                    donor.user.longitude
+                    entry.donor.user.latitude,
+                    entry.donor.user.longitude
                 );
-            
-                
-                return { donor, distance: Number(distance.toFixed(2)) };
+
+
+                return { donor:entry.donor,probability:entry.probability, distance: Number(distance.toFixed(2)) };
             })
             .filter(entry => entry.distance <= Number(requestInfo.searchDistance));
 
-        const request = new RequestInfo({ ...requestInfo, requester: req.user._id,matchedCount:nearbyDonors.length })
+        const request = new RequestInfo({ ...requestInfo, requester: req.user._id, matchedCount: nearbyDonors.length })
         await request.save();
 
         for (const entry of nearbyDonors) {
@@ -84,7 +86,8 @@ const createRequest = async (req, res) => {
                 donor: entry.donor.user._id,
                 donorBloodType: entry.donor.user.bloodType,
                 distance: entry.distance,
-        
+                probability: entry.probability
+
             });
             await log.save();
         }
@@ -99,38 +102,38 @@ const createRequest = async (req, res) => {
 };
 
 const updateRequest = async (req, res) => {
-  try {
-    const requestId = req.params.id;
-    const { status } = req.body;
+    try {
+        const requestId = req.params.id;
+        const { status } = req.body;
 
-    if (!["canceled", "completed"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status provided" });
+        if (!["canceled", "completed"].includes(status)) {
+            return res.status(400).json({ message: "Invalid status provided" });
+        }
+
+        const request = await RequestInfo.findById(requestId);
+        if (!request) {
+            return res.status(404).json({ message: "Request not found" });
+        }
+
+        request.status = status;
+        await request.save();
+
+        await MatchingLog.updateMany(
+            { request: requestId, status: { $ne: 'donated' } },
+            { $set: { status: 'expired' } }
+        );
+
+        await Message.deleteMany({
+            requestId: requestId
+        })
+
+
+        res.json({ message: `Request marked as ${status} and matching logs updated.` });
+
+    } catch (err) {
+        console.error("Error updating request:", err);
+        res.status(500).json({ message: "Server error while updating request" });
     }
-
-    const request = await RequestInfo.findById(requestId);
-    if (!request) {
-      return res.status(404).json({ message: "Request not found" });
-    }
-
-    request.status = status;
-    await request.save();
-   
-    await MatchingLog.updateMany(
-      { request: requestId, status :{$ne : 'donated'} },
-      { $set: { status: 'expired' } }
-    );
-
-    await Message.deleteMany({
-        requestId:requestId
-    })
-   
-
-    res.json({ message: `Request marked as ${status} and matching logs updated.` });
-
-  } catch (err) {
-    console.error("Error updating request:", err);
-    res.status(500).json({ message: "Server error while updating request" });
-  }
 };
 
 

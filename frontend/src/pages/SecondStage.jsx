@@ -13,7 +13,6 @@ const WILLINGNESS_CHOICES = [
 
 export default function SecondStage() {
   const userInfo = JSON.parse(localStorage.getItem('registrationFormData'));
-  console.log(userInfo);
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,6 +78,7 @@ export default function SecondStage() {
 
       if (response.ok) {
         toast.success("Registration Succesfull");
+        localStorage.clear();
 
         navigate('/login');
       } else {
@@ -152,7 +152,7 @@ export default function SecondStage() {
                 />
               </div>
 
-              {userInfo.gender == "Female" && <div>
+              {userInfo?.gender == "Female" && <div>
                 <label htmlFor="recently_gave_birth" className="block mb-1 font-medium">Recently Gave Birth (Last 9 months)</label>
                 <input
                   id="recently_gave_birth"

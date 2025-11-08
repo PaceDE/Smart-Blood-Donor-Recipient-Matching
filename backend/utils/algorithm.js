@@ -1,4 +1,4 @@
-import priors from "../../ml_model/priors.json" with {type:'json'};
+import priors from "../../ml_model/priors.json" with {type: 'json'};
 import freqLikelihood from '../../ml_model/frequency_likelihood.json' with { type: "json" };
 import recencyLikelihood from '../../ml_model/recency_likelihood.json' with { type: "json" };
 
@@ -17,6 +17,10 @@ function vincenty(lat1, lon1, lat2, lon2, searchDistance) {
     // Reduced latitudes
     const reducedLat1 = Math.atan((1 - f) * Math.tan(phi1));
     const reducedLat2 = Math.atan((1 - f) * Math.tan(phi2));
+    const cosLat1 = Math.cos(reducedLat1);
+    const cosLat2 = Math.cos(reducedLat2);
+    const sinLat1 = Math.sin(reducedLat1);
+    const sinLat2 = Math.sin(reducedLat2);
 
     let lambda = lonDiff;
     let prevLambda, sinSigma, cosSigma, sigma, sinAlpha, cos2Alpha, cos2SigmaMid;
@@ -28,23 +32,26 @@ function vincenty(lat1, lon1, lat2, lon2, searchDistance) {
 
         // Calculate angular distance sigma
         sinSigma = Math.sqrt(
-            Math.pow(Math.cos(reducedLat2) * sinLambda, 2) +
-            Math.pow(Math.cos(reducedLat1) * Math.sin(reducedLat2) -
-                Math.sin(reducedLat1) * Math.cos(reducedLat2) * cosLambda, 2)
+            Math.pow(cosLat2 * sinLambda, 2) +
+            Math.pow(cosLat1 * sinLat2 -
+                sinLat1 * cosLat2 * cosLambda, 2)
         );
 
         if (sinSigma === 0) return 0;  // coincident points
 
-        cosSigma = Math.sin(reducedLat1) * Math.sin(reducedLat2) +
-            Math.cos(reducedLat1) * Math.cos(reducedLat2) * cosLambda;
+        cosSigma = sinLat1 * sinLat2 +
+            cosLat1 * cosLat2 * cosLambda;
         sigma = Math.atan2(sinSigma, cosSigma);
 
         // Calculate azimuth
-        sinAlpha = (Math.cos(reducedLat1) * Math.cos(reducedLat2) * sinLambda) / sinSigma;
+        sinAlpha = (cosLat1 * cosLat2 * sinLambda) / sinSigma;
         cos2Alpha = 1 - Math.pow(sinAlpha, 2);
 
         // Correction for ellipsoidal shape
-        cos2SigmaMid = cosSigma - (2 * Math.sin(reducedLat1) * Math.sin(reducedLat2)) / cos2Alpha;
+
+        cos2SigmaMid = (cos2Alpha !== 0) ?
+            cosSigma - (2 * sinLat1 * sinLat2) / cos2Alpha
+            : 0;
 
         const C = (f / 16) * cos2Alpha * (4 + f * (4 - 3 * cos2Alpha));
         prevLambda = lambda;
@@ -99,56 +106,56 @@ const isEligibleDonor = (healthInfo, today = new Date()) => {
 };
 
 
-const predict = (totalDonations, lastDonationDate, willingness) =>{
-  const today = new Date();
-  const lastDate = new Date(lastDonationDate);
+const predict = (totalDonations, lastDonationDate, willingness) => {
+    const today = new Date();
+    const lastDate = new Date(lastDonationDate);
 
-  const dayDiff = (today - lastDate) / (24*60*60*1000);
-  const monthsDiff =Math.floor(dayDiff/30);
-  
+    const dayDiff = (today - lastDate) / (24 * 60 * 60 * 1000);
+    const monthsDiff = Math.floor(dayDiff / 30);
 
-  // Map Frequency
-  let frequencyCategory;
-  if (totalDonations <= 2) frequencyCategory = "Rare";
-  else if (totalDonations <= 8) frequencyCategory = "Occasional";
-  else if (totalDonations <= 18) frequencyCategory = "Regualr";
-  else if (totalDonations <= 25) frequencyCategory = "Active";
-  else frequencyCategory = "Veteran";
 
-  // Map Recency
-  let recencyCategory;
-  if (monthsDiff <= 4) recencyCategory = "VeryRecent";
-  else if (monthsDiff <= 7) recencyCategory = "Recent";
-  else if (monthsDiff <= 12) recencyCategory = "Moderate";
-  else recencyCategory = "LongAgo";
+    // Map Frequency
+    let frequencyCategory;
+    if (totalDonations <= 2) frequencyCategory = "Rare";
+    else if (totalDonations <= 8) frequencyCategory = "Occasional";
+    else if (totalDonations <= 18) frequencyCategory = "Regualr";
+    else if (totalDonations <= 25) frequencyCategory = "Active";
+    else frequencyCategory = "Veteran";
 
-  // Naive Bayes prediction
-  const epsilon = 1e-6;
-  const posteriors = {};
+    // Map Recency
+    let recencyCategory;
+    if (monthsDiff <= 4) recencyCategory = "VeryRecent";
+    else if (monthsDiff <= 7) recencyCategory = "Recent";
+    else if (monthsDiff <= 12) recencyCategory = "Moderate";
+    else recencyCategory = "LongAgo";
 
-  for (const cls of ["0","1"]) {
-    let posterior = priors[cls];
-    posterior *= recencyLikelihood[cls][recencyCategory] ?? epsilon;
-    posterior *= freqLikelihood[cls][frequencyCategory] ?? epsilon;
-    posteriors[cls] = posterior;
-  }
-  const marginal=(posteriors[0] + posteriors[1])
+    // Naive Bayes prediction
+    const epsilon = 1e-6;
+    const joints = {};
 
-  const prob1 = posteriors[1] /marginal ;
+    for (const cls of ["0", "1"]) {
+        let joint = priors[cls];
+        joint *= recencyLikelihood[cls][recencyCategory] ?? epsilon;
+        joint *= freqLikelihood[cls][frequencyCategory] ?? epsilon;
+        joints[cls] = joint;
+    }
+    const marginal = (joints[0] + joints[1])
 
-  // Willingness-adjusted threshold
-  const thresholdMap = {
-    1: 0.8,
-    2: 0.7,
-    3: 0.6,
-    4: 0.5,
-    5: 0.4,
-  };
+    const prob1 = joints[1] / marginal;
 
-  const threshold = thresholdMap[willingness] ?? 0.5;
+    // Willingness-adjusted threshold
+    const thresholdMap = {
+        1: 0.5 - (1-3)*0.08,
+        2: 0.5 - (2-3)*0.08,
+        3: 0.5 - (3-3)*0.08,
+        4: 0.5 - (4-3)*0.08,
+        5: 0.5 - (5-3)*0.08,
+    };
 
-  return prob1 >= threshold;
-    
+    const threshold = thresholdMap[willingness] ?? 0.5;
+
+    return [prob1, threshold];
+
 }
 
-export {vincenty,isEligibleDonor,predict};
+export { vincenty, isEligibleDonor, predict };

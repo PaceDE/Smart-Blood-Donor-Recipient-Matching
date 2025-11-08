@@ -86,8 +86,8 @@ function SidebarLayout() {
        
 
 
-        const pendingLogs = data.pendingLogs;
-        const unreadCount = data.unreadCount;
+        const pendingLogs = data.pendingLogs; // Donate section
+        const unreadCount = data.unreadCount; // Donate section
         const requestUnreadCount = data.requestUnreadCount;
         const requestPendingLogs = data.requestPendingLogs;
         setDonateSectionUnread(unreadCount);
@@ -108,7 +108,7 @@ function SidebarLayout() {
           
 
 
-            // Mark notification as sent on backend
+            
             await fetch(`http://localhost:5000/api/markNotification/${log._id}`, {
               method: 'PUT',
               credentials: 'include',

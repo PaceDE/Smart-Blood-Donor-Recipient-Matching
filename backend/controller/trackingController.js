@@ -8,13 +8,13 @@ import DonationHistory from '../models/donationhistory.js';
 
 export const getAppTrackingStats = async (req, res) => {
   try {
-    const now = dayjs();
+    const now = new Date();
 
     // Calculate month start/end dates
-    const startOfThisMonth = now.startOf('month').toDate();
-    const endOfThisMonth = now.endOf('month').toDate();
-    const startOfLastMonth = now.subtract(1, 'month').startOf('month').toDate();
-    const endOfLastMonth = now.subtract(1, 'month').endOf('month').toDate();
+    const startOfThisMonth = new Date(now.getFullYear(),now.getMonth(),1);
+    const endOfThisMonth = new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59,999);
+    const startOfLastMonth = new Date(now.getFullYear(),now.getMonth()-1,1);
+    const endOfLastMonth = new Date(now.getFullYear(),now.getMonth(),0,23,59,59,999);
 
     // Total registered users
     const totalUsers = await User.countDocuments();

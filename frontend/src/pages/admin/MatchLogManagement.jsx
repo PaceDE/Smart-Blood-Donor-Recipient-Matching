@@ -143,7 +143,7 @@ const MatchLogManagement = () => {
                 <th className="px-4 py-3">Request Blood Type</th>
                 <th className="px-4 py-3">Matched Blood Type </th>
                 <th className="px-4 py-3">Distance</th>
-                <th className="px-4 py-3">Matched At</th>
+                <th className="px-4 py-3">Willingness Probability</th>
                 <th className="px-4 py-3">Detail</th>
                 <th className="px-4 py-3">Go To</th>
               </tr>
@@ -184,7 +184,7 @@ const MatchLogManagement = () => {
                   <td className="px-4 py-2">
                     {log.distance} {" km"}
                   </td>
-                  <td className="px-4 py-2">{log.matchedAt.split("T")[0]}</td>
+                  <td className="px-4 py-2">{log.probability}</td>
                   <td className="p-5 capitalize ">
                     <Link
                       className="p-3 rounded-xl bg-[#800000] text-white"

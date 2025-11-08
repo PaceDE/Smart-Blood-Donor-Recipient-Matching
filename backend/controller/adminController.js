@@ -9,6 +9,7 @@ import bcrypt from "bcrypt";
 import UserEvent from "../models/userevent.js";
 import fs from "fs";
 import {AsyncParser} from "@json2csv/node";
+import { vincenty } from "../utils/algorithm.js";
 
 
 /* Fetching */
@@ -53,9 +54,10 @@ const getAllMatchLog = async (req, res) => {
         path: "donor",
         select: "-password",
       })
-
       .sort({ createdAt: -1 });
-    res.status(200).json(matchinglog);
+
+    const filteredLog = matchinglog.filter((e)=> (e.request!==null && e.request.requester!==null && e.request.donor!==null));
+    res.status(200).json(filteredLog);
   } catch (err) {
     console.error("Error fetching matchinglog:", err);
     res
@@ -77,19 +79,15 @@ const getAllDonationHistory = async (req, res) => {
       })
       .populate({
         path: "request",
-        populate: { path: 'requester', select: '-password' }
       })
       .populate({
         path: "log",
-        populate: [
-          { path: 'request', populate: { path: 'requester', select: '-password' } },
-          { path: 'donor', select: '-password' }
-        ]
       })
-
       .sort({ createdAt: -1 });
 
-    res.status(200).json(donationhistory);
+      const filteredHistory = donationhistory.filter(d=>(d.donor!==null && d.recipient!==null && d.request!==null && d.log !==null))
+
+    res.status(200).json(filteredHistory);
   } catch (err) {
     console.error("Error fetching donationhistory:", err);
     res
@@ -399,8 +397,14 @@ const test = async (req, res) => {
 
 
 };
+const getDistance = async(req,res) =>{
+  const {lat1,lon1,lat2,lon2} = req.body;
+  const distance = vincenty(lat1,lon1,lat1,lon2);
+  res.status(200).json(distance);
+}
 
 export {
+  getDistance,
   getAllUsers,
   getAllRequests,
   getAllMatchLog,
@@ -416,3 +420,4 @@ export {
   exportCSV,
   deleteEventdata
 };
+

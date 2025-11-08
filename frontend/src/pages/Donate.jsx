@@ -7,15 +7,25 @@ import { useAuth } from '../component/AuthContext';
 import { checkEligibility } from './Home';
 import Chat from '../component/Chat';
 import { Link } from 'react-router';
+import { useSocket } from '../component/SocketContext';
+
 
 const Donate = () => {
+
   const [filterUrgency, setFilterUrgency] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
+
+  const urgencyType = ["All", "Low", "High", "Critical"];
+  const statusType = ["All", "Active", "Accepted"];
+
   const [matchedLog, setMatchedLog] = useState([]);
   const [filteredLog, setFilteredLog] = useState([])
   const [loading, setLoading] = useState(false);
   const { user, healthInfo, totalRequests, totalDonations, isLoading } = useAuth();
   const eligible = checkEligibility(user, healthInfo);
   const [chatOpen, setChatOpen] = useState(false);
+  const { socket, messages, setMessages, messageLoading } = useSocket();
+
 
   useEffect(() => {
     const fetchMatchedLogs = async () => {
@@ -69,18 +79,23 @@ const Donate = () => {
     }
   };
 
-  const handleFilter = (e) => {
-    const selected = e.target.value;
-    setFilterUrgency(selected);
+  useEffect(() => {
+    let filtered = [...matchedLog];
+    if (filterUrgency !== "All") {
+      filtered = filtered.filter(
+        (f) => f.urgency.toLowerCase() === filterUrgency.toLowerCase()
+      )
+    }
+    if (filterStatus !== "All") {
+      filtered = filtered.filter(
+        f => f.status.toLowerCase() === filterStatus.toLowerCase())
+    }
+    setFilteredLog(filtered);
 
-    if (selected === "All")
-      setFilteredLog(matchedLog);
-    else
-      setFilteredLog(matchedLog.filter(log => log.urgency.toLowerCase() === selected.toLowerCase()));
+  }, [filterUrgency, filterStatus]);
 
-  };
 
-  if (isLoading)
+  if (isLoading || messageLoading)
     return (<Loading loadingText="Fetching user..." />)
 
 
@@ -134,16 +149,31 @@ const Donate = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
                   <select
                     value={filterUrgency}
-                    onChange={handleFilter}
+                    onChange={(e) => setFilterUrgency(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                   >
-                    <option value="All">All</option>
-                    <option value="Low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
+                    {urgencyType.map((u) => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
+
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Urgency</label>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    {statusType.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+
+                  </select>
+                </div>
+
+
               </div>
             </div>
           </div>
@@ -154,97 +184,108 @@ const Donate = () => {
           {/* Matching Request Results */}
           <div className=" p-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
             {filteredLog.length > 0 ? (
-              filteredLog.map((req, index) => (
-                <div
-                  key={index}
-                  className="border p-6 rounded-2xl shadow-xl border-red-200 text-gray-800 bg-white hover:shadow-2xl transition duration-200 mb-6"
-                >
-                  <div className="flex items-center justify-between">
-                    <Link to="/home/history" state={{ userId: req.userId }}>
+              filteredLog.map((req, index) => {
 
-                      <div className="flex items-center gap-4 mb-4 group relative cursor-pointer">
-                        <div className="text-white font-bold text-lg rounded-full w-12 h-12 bg-blue-600 flex justify-center items-center shadow-md">
-                          {req.fullName?.split(' ').map(name => name[0].toUpperCase()).join('') || '?'}
-                        </div>
-                        <div>
-                          <h1 className="font-semibold text-xl">{req.fullName || 'Unknown Name'}</h1>
-                          <p className="text-sm text-gray-500">{req.email}</p>
+                
+                const hasRead= messages.some(msg => req.userId === msg.sender && msg.status==="sent" )
+                return (
+                  <div
+                    key={index}
+                    className="border p-6 rounded-2xl shadow-xl border-red-200 text-gray-800 bg-white hover:shadow-2xl transition duration-200 mb-6"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Link to="/home/history" state={{ userId: req.userId }}>
+
+                        <div className="flex items-center gap-4 mb-4 group relative cursor-pointer">
+                          <div className="text-white font-bold text-lg rounded-full w-12 h-12 bg-blue-600 flex justify-center items-center shadow-md">
+                            {req.fullName?.split(' ').map(name => name[0].toUpperCase()).join('') || '?'}
+                          </div>
+                          <div>
+                            <h1 className="font-semibold text-xl">{req.fullName || 'Unknown Name'}</h1>
+                            <p className="text-sm text-gray-500">{req.email}</p>
+
+                          </div>
+                          <span className='absolute -right-15 -bottom-6 bg-gray-700 text-white opacity-0 group-hover:opacity-100 hover:opacity-100'>
+                            Click to see history
+                          </span>
 
                         </div>
-                        <span className='absolute -right-15 -bottom-6 bg-gray-700 text-white opacity-0 group-hover:opacity-100 hover:opacity-100'>
-                          Click to see history
-                        </span>
+                      </Link>
+
+                      <div>
+                        <div className={`text-center font-medium px-1 lg:px-5 py-1 rounded-full text-base animate-pulse ${req.urgency === 'Critical' ? 'bg-red-500 text-white' :
+                          req.urgency === 'High' ? 'bg-orange-400 text-white' :
+                            req.urgency === 'Medium' ? 'bg-yellow-300 text-gray-800' :
+                              'bg-green-200 text-green-900'
+                          }`}>
+                          {req.urgency}
+                        </div>
+                        {req.status === 'accepted' &&
+                          (<div className="mt-3 font-medium px-3 lg:px-5 py-1 rounded-full text-base bg-green-200 text-green-900">
+                            Accepted
+                          </div>
+                          )}
+
+                        {hasRead && (
+                            <div className='mt-3 bg-red-500 text-white text-center font-medium px-1 lg:px-5 py-1 rounded-full text-base animate-pulse'>
+                              Unread Message
+                            </div>)}
 
                       </div>
-                    </Link>
 
-                    <div>
-                      <div className={`text-center font-medium px-1 lg:px-5 py-1 rounded-full text-base animate-pulse ${req.urgency === 'Critical' ? 'bg-red-500 text-white' :
-                        req.urgency === 'High' ? 'bg-orange-400 text-white' :
-                          req.urgency === 'Medium' ? 'bg-yellow-300 text-gray-800' :
-                            'bg-green-200 text-green-900'
-                        }`}>
-                        {req.urgency}
+                    </div>
+
+                    <div className="space-y-2 text-sm leading-relaxed">
+                      <p className="text-gray-600 text-sm flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {req.distance} km away.
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-700">Blood Type:</span>{' '}
+                        <span className="font-bold text-red-600">{req.bloodType}</span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-700">Location:</span>{' '}
+                        {req.address}
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-700">Phone:</span>{' '}
+                        <a href={`tel:${req.phone}`} className="text-blue-600 hover:underline">{req.phone}</a>
+                      </p>
+
+                      <p>
+                        <span className="font-medium text-gray-700">Hospital:</span>{' '}
+                        {req.hospital}
+                      </p>
+
+                      <div className='border border-gray-200 rounded-lg p-5'>
+                        {req.description}
                       </div>
-                      {req.status === 'accepted' &&
-                        (<div className="mt-3 font-medium px-3 lg:px-5 py-1 rounded-full text-base bg-green-200 text-green-900">
-                          Accepted
+                    </div>
+
+                    <div className="actions mt-4">
+                      {req.status !== 'accepted' ? (
+                        <div className="grid grid-cols-2 gap-2 font-bold">
+                          <button onClick={() => handleStatusUpdate(req.id, 'accepted')} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
+                            Accept Request
+                          </button>
+                          <button onClick={() => handleStatusUpdate(req.id, 'declined')} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
+                            Decline
+                          </button>
                         </div>
-                        )}
+                      ) : (
+                        <div className="grid grid-cols-1 gap-2 font-bold">
+                          <button onClick={() => { setChatOpen(true) }} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                            Start a Conversation
+                          </button>
+                          {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={req.userId} name={req.fullName} requestId={req.requestId} />}
+                        </div>
+                      )}
                     </div>
 
                   </div>
-
-                  <div className="space-y-2 text-sm leading-relaxed">
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {req.distance} km away.
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-700">Blood Type:</span>{' '}
-                      <span className="font-bold text-red-600">{req.bloodType}</span>
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-700">Location:</span>{' '}
-                      {req.address}
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-700">Phone:</span>{' '}
-                      <a href={`tel:${req.phone}`} className="text-blue-600 hover:underline">{req.phone}</a>
-                    </p>
-
-                    <p>
-                      <span className="font-medium text-gray-700">Hospital:</span>{' '}
-                      {req.hospital}
-                    </p>
-
-                    <div className='border border-gray-200 rounded-lg p-5'>
-                      {req.description}
-                    </div>
-                  </div>
-
-                  <div className="actions mt-4">
-                    {req.status !== 'accepted' ? (
-                      <div className="grid grid-cols-2 gap-2 font-bold">
-                        <button onClick={() => handleStatusUpdate(req.id, 'accepted')} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
-                          Accept Request
-                        </button>
-                        <button onClick={() => handleStatusUpdate(req.id, 'declined')} className="bg-white border border-red-500 hover:bg-red-100 text-red-500 px-4 py-2 rounded-lg text-sm">
-                          Decline
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 gap-2 font-bold">
-                        <button onClick={() => { setChatOpen(true) }} className="bg-red-500  hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
-                          Start a Conversation
-                        </button>
-                        {chatOpen && <Chat chatOpen={chatOpen} setChatOpen={setChatOpen} sendFrom={user._id} sendTo={req.userId} name={req.fullName} requestId={req.requestId} />}
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-              ))
+                )
+              })
             ) : (
               <p className="text-gray-500 text-center">
                 No matching blood requests found.

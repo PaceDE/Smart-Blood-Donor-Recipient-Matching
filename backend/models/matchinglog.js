@@ -9,6 +9,7 @@ const MatchingLogSchema = new mongoose.Schema({
     required: true,
   },
   distance: { type: Number, required: true },
+  probability:{type: Number, required: true},
   matchedAt: { type: Date, default: Date.now },
   notification_sent: { type: Boolean, default: false },
   read:{type:Boolean,default:false},

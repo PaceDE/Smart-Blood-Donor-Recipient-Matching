@@ -57,7 +57,7 @@ const matchedLog = async (req, res) => {
                     model: 'User',
                     select: '_id fullName phone address email'
                 }
-            });
+            }).sort({updatedAt:-1});
 
 
 
@@ -142,7 +142,7 @@ const acceptedLog = async (req, res) => {
                 path: 'donor',
                 model: 'User',
                 select: '_id fullName phone address email'
-            })
+            }).sort({updatedAt:-1})
 
         const result = [];
         for (let log of logs) {
