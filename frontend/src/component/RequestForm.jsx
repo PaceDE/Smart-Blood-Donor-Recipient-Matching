@@ -119,6 +119,7 @@ const RequestForm = () => {
                                     </button>
                                 ))}
                             </div>
+                             <p className="text-red-500">{errors.bloodType && `${errors.bloodType}`}</p>
                         </div>
 
                         {/* Urgency */}
@@ -134,6 +135,7 @@ const RequestForm = () => {
                                     <option key={urgency} value={urgency}>{urgency}</option>
                                 ))}
                             </select>
+                             <p className="text-red-500">{errors.urgency && `${errors.urgency}`}</p>
                         </div>
 
                         {/* Description */}
@@ -147,6 +149,7 @@ const RequestForm = () => {
                                 rows="4"
                                 placeholder="Provide additional information or reason for request..."
                             />
+                             <p className="text-red-500">{errors.description && `${errors.description}`}</p>
                         </div>
 
                         {/* Hospital */}
@@ -160,6 +163,7 @@ const RequestForm = () => {
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
                                 placeholder="e.g. Bir Hospital"
                             />
+                            <p className="text-red-500">{errors.hospital && `${errors.hospital}`}</p>
                         </div>
 
                         {/* Distance */}
@@ -174,6 +178,7 @@ const RequestForm = () => {
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
                                 placeholder="e.g. 10"
                             />
+                             <p className="text-red-500">{errors.searchDistance && `${errors.searchDistance}`}</p>
                         </div>
 
                         <div>
