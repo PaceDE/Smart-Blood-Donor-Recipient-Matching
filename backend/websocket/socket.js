@@ -98,7 +98,7 @@ function setupWebSocket(server) {
           }
         }
 
-        // Send to all sockets of the sender (mirror it)
+        // Send to all sockets of the sender 
         const senderSockets = clients.get(sender);
         if (senderSockets) {
           for (const sock of senderSockets) {

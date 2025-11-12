@@ -32,9 +32,8 @@ const total = values.reduce((sum, val) => sum + val, 0);
       legend: {
         position: 'bottom',
       },
-      maintainAspectRatio:false,
-      responsive:true,
     },
+    maintainAspectRatio:false,
   };
     return (
         <>

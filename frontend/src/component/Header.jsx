@@ -8,7 +8,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
-          {/* Icon and Branding */}
+         
           <div className="flex items-center space-x-6">
             <div className="relative">
               <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
@@ -31,7 +31,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Navigation Buttons */}
+         
           <div className="flex items-center space-x-4">
             <Link
               to="/login"

@@ -58,7 +58,7 @@ const verifyToken = async (req, res, next) => {
     }
   }
 
-  // Access token present, verify it
+ // Acces token present
   try {
     const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     req.user = decoded;

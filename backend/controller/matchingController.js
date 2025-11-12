@@ -1,4 +1,4 @@
-// Convert degrees to radians
+
 import HealthInfo from "../models/healthinfo.js";
 import MatchingLog from "../models/matchinglog.js";
 import RequestInfo from "../models/requestinfo.js";
@@ -93,7 +93,7 @@ const updateMatchLog = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
 
-        // Validate input
+       
         const validStatuses = ['active', 'accepted', 'declined', 'donated', 'expired'];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ error: 'Invalid status value' });
@@ -157,6 +157,7 @@ const acceptedLog = async (req, res) => {
                 phone: log.donor.phone,
                 email: log.donor.email,
                 address: log.donor.address,
+                probability:log.probability,
                 total_donations: health?.total_donations || 0,
                 last_donation_date: health?.last_donation_date || null
 
@@ -172,8 +173,8 @@ const acceptedLog = async (req, res) => {
 const pendingNotifications = async (req, res) => {
     try {
         const userId = req.user._id;
-        const pendingLogs = await MatchingLog.find({ donor: userId, notification_sent: false, status: 'active' });
-        const unreadCount = await MatchingLog.countDocuments({ donor: userId, read: false, status: 'active' });
+        const pendingLogs = await MatchingLog.find({ donor: userId, notification_sent: false, status: 'active' }); //donatePendingLogs 
+        const unreadCount = await MatchingLog.countDocuments({ donor: userId, read: false, status: 'active' }); // Donate 
 
         const requestInfo = await RequestInfo.findOne({ requester: userId, status: "pending" });
         let requestPendingLogs, requestUnreadCount;

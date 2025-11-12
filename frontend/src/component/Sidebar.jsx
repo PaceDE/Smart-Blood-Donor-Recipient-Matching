@@ -92,15 +92,15 @@ const Sidebar = ({ donateSectionUnread,setDonateSectionUnread, requestSectionUnr
 
   return (
     <>
-      {/* Sidebar Toggle (Checkbox Hack) */}
+     
       <input type="checkbox" id="sidebar-toggle" className="peer hidden" />
 
-      {/* Hamburger for small devices */}
+      
       <label htmlFor="sidebar-toggle" className="sm:hidden fixed top-6 left-4 z-30 bg-white border border-gray-200 p-2 rounded shadow-md cursor-pointer">
         <FontAwesomeIcon icon={faBars} className="text-xl text-red-600" />
       </label>
 
-      {/* Sidebar */}
+     
       <aside
         className={`
           fixed top-0 left-0 h-screen bg-white border-r border-gray-100 shadow-xl z-40

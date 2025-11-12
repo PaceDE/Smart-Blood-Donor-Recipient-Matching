@@ -62,7 +62,7 @@ export default function SecondStage() {
     setIsSubmitting(true);
     const healthData = { ...healthInfo };
 
-    // If no donations, assign default placeholder dates
+   
     if (parseInt(healthData.total_donations) === 0) {
       delete healthData.last_donation_date;
     }

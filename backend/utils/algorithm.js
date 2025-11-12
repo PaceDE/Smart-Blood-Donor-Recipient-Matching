@@ -2,14 +2,17 @@ import priors from "../../ml_model/priors.json" with {type: 'json'};
 import freqLikelihood from '../../ml_model/frequency_likelihood.json' with { type: "json" };
 import recencyLikelihood from '../../ml_model/recency_likelihood.json' with { type: "json" };
 
-const toRadians = (deg) => deg * (Math.PI / 180);
+const toRadians = (deg) => (deg * Math.PI) / 180;
+
+
+
 function vincenty(lat1, lon1, lat2, lon2, searchDistance) {
     // Earth's ellipsoid parameters (WGS-84)
     const a = 6378137.0;          // semi-major axis in meters
     const f = 1 / 298.257223563;  // flattening
     const b = (1 - f) * a;        // semi-minor axis
 
-    // Convert coordinates to radians
+   
     const phi1 = toRadians(lat1);
     const phi2 = toRadians(lat2);
     const lonDiff = toRadians(lon2 - lon1);
@@ -30,7 +33,7 @@ function vincenty(lat1, lon1, lat2, lon2, searchDistance) {
         const sinLambda = Math.sin(lambda);
         const cosLambda = Math.cos(lambda);
 
-        // Calculate angular distance sigma
+        //angular distance sigma
         sinSigma = Math.sqrt(
             Math.pow(cosLat2 * sinLambda, 2) +
             Math.pow(cosLat1 * sinLat2 -
@@ -43,7 +46,7 @@ function vincenty(lat1, lon1, lat2, lon2, searchDistance) {
             cosLat1 * cosLat2 * cosLambda;
         sigma = Math.atan2(sinSigma, cosSigma);
 
-        // Calculate azimuth
+        // azimuth
         sinAlpha = (cosLat1 * cosLat2 * sinLambda) / sinSigma;
         cos2Alpha = 1 - Math.pow(sinAlpha, 2);
 
@@ -62,7 +65,7 @@ function vincenty(lat1, lon1, lat2, lon2, searchDistance) {
 
     } while (Math.abs(lambda - prevLambda) > 1e-12 && ++iterations < 1000);
 
-    // Final distance calculation
+   
     const uSquared = (cos2Alpha * (Math.pow(a, 2) - Math.pow(b, 2))) / Math.pow(b, 2);
     const A = 1 + (uSquared / 16384) * (4096 + uSquared * (-768 + uSquared * (320 - 175 * uSquared)));
     const B = (uSquared / 1024) * (256 + uSquared * (-128 + uSquared * (74 - 47 * uSquared)));
@@ -80,7 +83,7 @@ const isEligibleDonor = (healthInfo, today = new Date()) => {
 
     if (!user) return false;
 
-    // Calculate age
+   
     const dob = new Date(user.dateOfBirth);
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();
@@ -114,7 +117,6 @@ const predict = (totalDonations, lastDonationDate, willingness) => {
     const monthsDiff = Math.floor(dayDiff / 30);
 
 
-    // Map Frequency
     let frequencyCategory;
     if (totalDonations <= 2) frequencyCategory = "Rare";
     else if (totalDonations <= 8) frequencyCategory = "Occasional";
@@ -122,14 +124,14 @@ const predict = (totalDonations, lastDonationDate, willingness) => {
     else if (totalDonations <= 25) frequencyCategory = "Active";
     else frequencyCategory = "Veteran";
 
-    // Map Recency
+   
     let recencyCategory;
     if (monthsDiff <= 4) recencyCategory = "VeryRecent";
     else if (monthsDiff <= 7) recencyCategory = "Recent";
     else if (monthsDiff <= 12) recencyCategory = "Moderate";
     else recencyCategory = "LongAgo";
 
-    // Naive Bayes prediction
+   
     const epsilon = 1e-6;
     const joints = {};
 
@@ -143,19 +145,18 @@ const predict = (totalDonations, lastDonationDate, willingness) => {
 
     const prob1 = joints[1] / marginal;
 
-    // Willingness-adjusted threshold
+   
     const thresholdMap = {
-        1: 0.5 - (1-3)*0.08,
-        2: 0.5 - (2-3)*0.08,
-        3: 0.5 - (3-3)*0.08,
-        4: 0.5 - (4-3)*0.08,
-        5: 0.5 - (5-3)*0.08,
+        1: 0.5 - (1-3)*0.06,
+        2: 0.5 - (2-3)*0.06,
+        3: 0.5 - (3-3)*0.06,
+        4: 0.5 - (4-3)*0.06,
+        5: 0.5 - (5-3)*0.06,
     };
 
     const threshold = thresholdMap[willingness] ?? 0.5;
 
     return [prob1, threshold];
-
 }
 
-export { vincenty, isEligibleDonor, predict };
+export { vincenty, isEligibleDonor, predict};

@@ -1,16 +1,16 @@
-// trackingController.js
 
 import dayjs from 'dayjs';
 import User from '../models/users.js';
 import RequestInfo from '../models/requestinfo.js';
 import DonationHistory from '../models/donationhistory.js';
+import Result from '../../ml_model/Result.json' with { type: 'json' };
 
 
 export const getAppTrackingStats = async (req, res) => {
   try {
     const now = new Date();
 
-    // Calculate month start/end dates
+   
     const startOfThisMonth = new Date(now.getFullYear(),now.getMonth(),1);
     const endOfThisMonth = new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59,999);
     const startOfLastMonth = new Date(now.getFullYear(),now.getMonth()-1,1);
@@ -83,7 +83,8 @@ export const getAppTrackingStats = async (req, res) => {
       requestGrowth: requestGrowth.toFixed(2),
       bloodTypeDistribution,
       bloodReqDistribution,
-      bloodDonateDistribution
+      bloodDonateDistribution,
+      Result
     });
   } catch (error) {
     console.error('Error in getAppTrackingStats:', error);

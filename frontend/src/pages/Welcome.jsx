@@ -99,7 +99,7 @@ export default function Welcome() {
             <div className="space-y-8 text-center lg:text-left max-w-4xl mx-auto">
               <div className="space-y-4">
                 <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold hover:bg-red-100">
-                  🩸 Saving Lives Through Technology
+                  Saving Lives Through Technology
                 </span>
                 <h1 className="mt-10 text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                   Connect{" "}

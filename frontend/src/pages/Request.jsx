@@ -28,7 +28,7 @@ const Request = () => {
         const data = await res.json();
         setExistingRequest(data);
       } catch (err) {
-        setExistingRequest(null); // ❌ no request exists or error
+        setExistingRequest(null);
       } finally {
         setLoading(false);
       }

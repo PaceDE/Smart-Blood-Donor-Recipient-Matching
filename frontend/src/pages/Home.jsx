@@ -9,6 +9,7 @@ import AppTracking from '../component/AppTracking';
 import BarChart from '../component/BarChart';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import LineChart from '../component/LineChart';
 
 const checkEligibility = (user, healthInfo) => {
   if (!user || !healthInfo) return false;
@@ -45,6 +46,10 @@ export default function Home() {
   const bloodTypeDistribution = stats?.bloodTypeDistribution || {};
   const bloodReqDistribution = stats?.bloodReqDistribution || {};
   const bloodDonateDistribution = stats?.bloodDonateDistribution || {};
+  const Result = stats?.Result || {};
+
+
+
 
   const labels = Object.keys(bloodTypeDistribution);
   const values = Object.values(bloodTypeDistribution);
@@ -57,6 +62,14 @@ export default function Home() {
   var progress;
   const milestones = [5, 10, 15, 25, 50, 100];
   var currentMilestone;
+  let resultLabel, resultValue;
+  if (user.role === "admin" && !loading) {
+
+    resultLabel = ["Precision(Willing)", "Recall(Willing)", "Precision(Not Willing)", "Recall(Not Willing)"]
+    resultValue = [Number(Result.P1.toFixed(2)), Number(Result.R1.toFixed(2)), Number(Result.P0.toFixed(2)), Number(Result.R0.toFixed(2))]
+    console.log(resultValue);
+
+  }
   if (user.role !== "admin") {
     currentMilestone = milestones.find(m => m > totalDonations) || milestones[milestones.length - 1];
     progress = Math.min(100, ((totalDonations * 100) / currentMilestone));
@@ -153,22 +166,100 @@ export default function Home() {
 
 
         {/*Bar chart */}
-        <div className='bg-white border border-gray-200 p-5 rounded-lg '>
+        <div className='bg-white border border-gray-200 p-5 rounded-lg mt-5'>
           <div>
             <h4 className='font-bold text-xl md:text-2xl'>Blood Request vs Donation Distribution</h4>
 
             <p className='text-gray-600'>Current distribution of requested blood vs donated blood</p>
 
             <div className="mt-5 w-[80%] h-[200px] md:h-[300px] lg:h-[450px] mx-auto ">
-              <BarChart labels={labels} reqValues={reqValues} donValues={donValues} reqLabel="Requested Blood Count" donLabel="Donated Blood Count" />
+              <BarChart labels={labels} reqValues={reqValues} donValues={donValues} reqLabel="Requested Blood Count" donLabel="Donated Blood Count" double={true} />
             </div>
           </div>
         </div>
 
+        {user.role === "admin" &&
+          <div className='bg-white border border-gray-200 p-5 rounded-lg mt-5'>
 
-      </main>
+            <h4 className='font-bold text-xl md:text-2xl'>Result Analysis of Model</h4>
 
-    </div>
+
+            <div className='mt-8 border-2 border-gray-200 shadow-md'>
+              <p className='text-gray-600 text-center font-bold mt-5 text-xl'>Confusion Matrix</p>
+              <div className='mt-5 shadow-md'>
+                <div className="mt-5 w-[90%] sm:w-[80%] md:w-[60%] lg:w-[40%] mx-auto pb-4">
+
+                  <table className='table-fixed w-full h-full md:-ml-16'>
+                    <tr className=' w-[100%] h-[100%]'>
+                      <td className=' w-[30%]' colSpan={2}></td>
+                      <td className=' w-[70%] text-center align-middle text-gray-600 p-4' colSpan={2}>Predicted Class</td>
+                    </tr>
+                    <tr className=' w-[100%]'>
+                      <td className='w-[30%]' colSpan={2}></td>
+                      <td className=' w-[35%] text-center align-middle text-[12px] font-bold text-gray-600'>Wlling</td>
+                      <td className=' w-[35%] text-center align-middle text-[12px] font-bold text-gray-600'>Not Willing</td>
+                    </tr>
+
+                    <tr className=' w-[100%]'>
+                      <td className=' w-[10%] text-center align-middle text-gray-600' rowSpan={2}><p className='rotate-90 whitespace-nowrap'>Actual Class</p></td>
+                      <td className=' w-[20%] text-center align-middle pr-5 text-[12px] font-bold text-gray-600 rotate-90' >Willing</td>
+                      <td className='bg-red-100 w-[35%] text-center align-middle border-2 border-gray-500'>
+                        <div className='w-full aspect-squareflex justify-center items-center'>TP = {Result.TP}</div>
+                      </td>
+                      <td className='bg-green-100 w-[35%] text-center align-middle border-2 border-gray-500'>
+                        <div className='w-full aspect-square flex justify-center items-center'>FN = {Result.FN}</div>
+                      </td>
+
+                    </tr>
+                    <tr className=' w-[100%]'>
+                      <td className='w-[20%] text-center align-middle pr-5 text-[12px] font-bold text-gray-600 rotate-90' >Not Willing</td>
+
+                      <td className='bg-blue-100 w-[35%] text-center align-middle border-2 border-gray-500'>
+                        <div className='w-full aspect-squareflex justify-center items-center '>FP = {Result.FP}</div>
+                      </td>
+                      <td className='bg-yellow-100 w-[35%] text-center align-middle border-2  border-gray-500'>
+                        <div className='w-full aspect-square flex justify-center items-center'>TN = {Result.FN}</div>
+                      </td>
+
+                    </tr>
+
+                  </table>
+                </div>
+              </div>
+            </div>
+
+
+            <div className='mt-8'>
+              <div className='border-2 border-gray-200 mt-5 shadow-md'>
+                <p className='text-gray-600 text-center font-bold mt-5'>Key Metrics for Model Model Performance</p>
+
+                <div className="mt-5 w-[80%] h-[200px] md:h-[300px] lg:h-[450px] mx-auto ">
+                  <BarChart resultLabel={resultLabel} resultValue={resultValue} label="Model Perfromance" double={false} />
+                </div>
+              </div>
+            </div>
+
+
+            <div className='mt-8'>
+              <div className='border-2 border-gray-200 mt-5 shadow-md'>
+                <p className='text-gray-600 text-center font-bold mt-5'>ROC-AUC Curve</p>
+
+                <div className="mt-5 w-[80%] h-[200px] md:h-[300px] lg:h-[450px] mx-auto ">
+                  <LineChart FPR={Result.FPR} TPR={Result.TPR} AUC={Result.AUC} />
+                </div>
+              </div>
+            </div>
+
+
+
+
+          </div>
+        }
+
+
+      </main >
+
+    </div >
   );
 }
 

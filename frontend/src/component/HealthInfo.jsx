@@ -94,7 +94,7 @@ const HealthInfo = () => {
         if (!validateForm())
             return;
 
-        // since setFormdata is asynchronous so old formdata is saved so we use local var
+      
         const updatedForm = {
             ...formData,
             has_disease: Boolean(formData.has_disease),

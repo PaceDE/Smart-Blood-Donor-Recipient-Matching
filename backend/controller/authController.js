@@ -39,7 +39,8 @@ const register = async (req, res) => {
         }
 
         const existingUser = await User.findOne({ email: userInfo.email });
-        if (existingUser) {
+        const existingPhone = await User.findOne({phone: userInfo.phone});
+        if (existingUser || existingPhone) {
             return res.status(400).json({ message: "Email already registered" });
         }
 

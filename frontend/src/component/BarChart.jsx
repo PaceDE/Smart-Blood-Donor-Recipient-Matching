@@ -4,33 +4,45 @@ import { Chart, registerables, defaults } from 'chart.js';
 Chart.register(...registerables);
 defaults.maintainAspectRatio = false;
 
-const BarChart = ({ labels, reqValues, donValues, reqLabel, donLabel }) => {
+const BarChart = (props) => {
+    let labels, datasets,legend;
+    if (props.double) {
+        labels = props.labels;
+        datasets = [
+            { label: props.reqLabel, data: props.reqValues, backgroundColor: '#3B82F6', },
+            { label: props.donLabel, data: props.donValues, backgroundColor: '#EF4444', }
+        ]
+        legend = {
+                position: 'bottom'
+            }
+    }
+    else {
+        labels = props.resultLabel;
+        datasets = [
+            { data: props.resultValue, backgroundColor: ['#3B82F6','#EF4444','rgb(0,255,255)','#AAAAAA'] }
+        ]
+        legend=false
+        
+        
+    }
 
     const chartData = {
         labels: labels,
-        datasets: [
-            {
-                label: reqLabel,
-                data: reqValues,
-                backgroundColor: '#3B82F6',
-
-            },
-            {
-                label: donLabel,
-                data: donValues,
-                backgroundColor: '#EF4444',
-            }
-        ]
-
+        datasets: datasets
     }
     const options = {
         responsive: true,
         plugins: {
-            legend: {
-                position: 'bottom',
-            },
+            legend: legend
         },
-        
+        scales: {
+            y: {
+                min: 0,
+                max: props.double ? undefined : 1  
+            }
+        }
+
+
     }
 
     return (

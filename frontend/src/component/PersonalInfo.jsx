@@ -99,7 +99,12 @@ const PersonalInfo = () => {
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
+        let newValue = value
+        if (id==='phone'){
+            newValue=newValue.replace(/\D/g,'').slice(0,10);
+        }
+
+        setFormData(prev => ({ ...prev, [id]: newValue }));
     };
 
     const handleSave = async () => {
@@ -107,7 +112,7 @@ const PersonalInfo = () => {
             return;
         
         setIsSubmitting(true);
-        // since setFormdata is asynchronous so old formdata is saved so we use local var
+        
         const updatedForm = {
             ...formData,
             latitude: coordinates.lat,
@@ -148,13 +153,16 @@ const PersonalInfo = () => {
     const validateForm = () => {
         const newErrors = {};
 
+        if(formData.fullName.trim().split(" ").length<2) newErrors.fullName = "Full name is required"
         if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+
         if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
         if (!formData.gender) newErrors.gender = "Gender is required";
         if (!formData.bloodType) newErrors.bloodType = "Blood type is required";
         if (!formData.email.trim()) newErrors.email = "Email is required";
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
         if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+
 
 
         setErrors(newErrors);

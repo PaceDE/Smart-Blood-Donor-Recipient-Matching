@@ -54,7 +54,7 @@ export default function Register() {
         if (!validateForm())
             return;
 
-        // since setFormdata is asynchronous so old formdata is saved so we use local var
+        
         const updatedForm = {
             ...formData,
             latitude: coordinates.lat,
@@ -64,7 +64,7 @@ export default function Register() {
         const { confirmPassword, ...savedData } = updatedForm;
 
         localStorage.setItem('registrationFormData', JSON.stringify(savedData));
-        navigate('/next-step'); // Assuming you're using react-router-dom
+        navigate('/next-step'); 
     };
 
     const validateForm = () => {
@@ -83,9 +83,7 @@ export default function Register() {
             newErrors.confirmPassword = "Passwords do not match";
         }
 
-        /*if (!coordinates.address) {
-            newErrors.address = "Please select your location on the map";
-        }*/
+      
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
