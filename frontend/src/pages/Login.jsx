@@ -161,7 +161,7 @@ function Login() {
 
 
               <div>
-                <button type="submit" disabled={isSubmitting}onClick={handleSubmit} className='text-center text-white bg-red-500 w-full p-3 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'>
+                <button type="submit" disabled={isSubmitting} onClick={handleSubmit} className='text-center text-white bg-red-500 w-full p-3 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'>
                   {isSubmitting ? "Logging in..." : "Login"}
                 </button>
                 {loginError && <p className="text-red-500 text-sm">{loginError}</p>}

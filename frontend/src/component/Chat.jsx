@@ -131,7 +131,7 @@ const Chat = ({ chatOpen, setChatOpen, sendFrom, sendTo, name, requestId }) => {
 
                 </div>
 
-                {/* Messages placeholder */}
+                {/* Messages*/}
                 <div ref={scrollRef} style={{ scrollbarWidth: 'none' }} className="flex flex-col p-4 min-h-[350px] max-h-[350px] overflow-y-auto space-y-2 text-gray-500 ">
                     {chatMessages.length === 0 ? (
                         <p>No Messages yet</p>
@@ -146,7 +146,7 @@ const Chat = ({ chatOpen, setChatOpen, sendFrom, sendTo, name, requestId }) => {
 
                 </div>
 
-                {/* Input area placeholder */}
+               
                 <div className="p-4 border-t border-gray-300  flex gap-2">
                     <textarea
                         rows="1"
